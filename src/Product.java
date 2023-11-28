@@ -4,6 +4,13 @@ public abstract class Product {
     private int numOfAvailable;
     private double price;
 
+    public Product(String productID, String productName, int numOfAvailable, double price) {
+        this.productID = productID;
+        this.productName = productName;
+        this.numOfAvailable = numOfAvailable;
+        this.price = price;
+    }
+
     public String getProductID() {
         return productID;
     }
