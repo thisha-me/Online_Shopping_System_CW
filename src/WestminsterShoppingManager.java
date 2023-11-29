@@ -1,5 +1,7 @@
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -129,6 +131,16 @@ public class WestminsterShoppingManager {
                 System.out.println((Electronics) product);
             else if (product instanceof Clothing)
                 System.out.println((Clothing) product);
+        }
+    }
+
+    public void saveProductToFile(){
+        try {
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream ("products.txt"));
+            outputStream.writeObject(products);
+            System.out.println("Products saved to file.");
+        } catch (IOException e) {
+            System.out.println("Error saving products to file.");
         }
     }
 }
