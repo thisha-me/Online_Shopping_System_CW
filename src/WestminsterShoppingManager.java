@@ -1,8 +1,7 @@
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 public class WestminsterShoppingManager {
@@ -141,6 +140,15 @@ public class WestminsterShoppingManager {
             System.out.println("Products saved to file.");
         } catch (IOException e) {
             System.out.println("Error saving products to file.");
+        }
+    }
+
+    public void loadProductsFromFile() {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("products.txt"))) {
+            products = (ArrayList<Product>) inputStream.readObject();
+            System.out.println("Products loaded from file.");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("No saved products found.");
         }
     }
 }
