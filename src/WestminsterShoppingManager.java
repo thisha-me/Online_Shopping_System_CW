@@ -26,6 +26,8 @@ public class WestminsterShoppingManager {
     public static void addProduct(){
         Scanner scanner=new Scanner(System.in);
 
+        System.out.println("Add Product");
+
         if(products.size()>50){
             System.out.println("Maximum product limit reached (50 products). Cannot add more.");
             return;  // for exit method
@@ -53,7 +55,7 @@ public class WestminsterShoppingManager {
                 System.out.print("Brand: ");
                 String brand= scanner.next();
 
-                System.out.print("Warranty Period: ");
+                System.out.print("Warranty Period (Months): ");
                 int warrantyPeriod=scanner.nextInt();
 
                 Electronics newElectronics=new Electronics(productId,productName,availableItems,price,brand,warrantyPeriod);
@@ -73,9 +75,61 @@ public class WestminsterShoppingManager {
                 break;
             default:
                 System.out.println("invalid Choice");
+        }
+    }
 
+    public static void deleteProduct(){
+        Scanner scanner=new Scanner(System.in);
+
+        if(products.isEmpty()){
+            System.out.println("No products available for delete.");
+            return;
         }
 
+        System.out.println("Delete Product");
+
+        System.out.print("Product Id:");
+        String deleteProductId= scanner.next();
+
+        Product deletedProduct=null;
+        for(Product product:products){
+            if (product.equals(deleteProductId)){
+                deletedProduct=product;
+                System.out.println("Product Delete ");
+                break;
+            }
+        }
+
+        if(deletedProduct==null){
+            System.out.println("Product with ID " + deleteProductId + " not found.");
+            return;
+        }
+
+        System.out.println("Deleted Product");
+        if(deletedProduct instanceof Electronics){
+            System.out.println(
+                    "Type: Electronics" +
+                    "\nID: " + deletedProduct.getProductID() +
+                    "\nName: " + deletedProduct.getProductName() +
+                    "\nBrand: " + ((Electronics) deletedProduct).getBrand()+
+                    "\nWarranty: "+((Electronics) deletedProduct).getWarrantyPeriod()+
+                    "\nPrice: "+deletedProduct.getPrice()+
+                    "\nProduct Left: "+deletedProduct.getAvailableItems()
+            );
+        }
+        else if(deletedProduct instanceof Clothing){
+            System.out.println(
+                    "Type: Clothing" +
+                    "\nID: " + deletedProduct.getProductID() +
+                    "\nName: " + deletedProduct.getProductName() +
+                    "\nSize: " +((Clothing) deletedProduct).getSize() +
+                    "\nColor: " + ((Clothing) deletedProduct).getColor()+
+                    "\nPrice: "+deletedProduct.getPrice()+
+                    "\nProduct Left: "+deletedProduct.getAvailableItems()
+            );
+        }
+
+        //TODO complete this method
 
     }
 }
