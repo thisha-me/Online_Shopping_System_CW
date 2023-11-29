@@ -59,8 +59,20 @@ public class WestminsterShoppingManager {
                 Electronics newElectronics=new Electronics(productId,productName,availableItems,price,brand,warrantyPeriod);
                 products.add(newElectronics);
                 System.out.println("Electronics added successfully");
+                break;
+            case "2":
+                System.out.print("Size: ");
+                String size= scanner.next();
 
-                //TODO implement add method for clothing
+                System.out.print("Color: ");
+                String color=scanner.next();
+
+                Clothing newClothing=new Clothing(productId,productName,availableItems,price,size,color);
+                products.add(newClothing);
+                System.out.println("Clothing added successfully");
+                break;
+            default:
+                System.out.println("invalid Choice");
 
         }
 
