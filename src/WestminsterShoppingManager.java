@@ -60,7 +60,6 @@ public class WestminsterShoppingManager {
                 products.add(newElectronics);
                 System.out.println("Electronics added successfully");
 
-                //TODO change available Variable name
                 //TODO implement add method for clothing
 
         }

@@ -1,16 +1,16 @@
 public abstract class Product {
     private String productID;
     private String productName;
-    private int numOfAvailable;
+    private int availableItems;
     private double price;
 
     public Product() {
     }
 
-    public Product(String productID, String productName, int numOfAvailable, double price) {
+    public Product(String productID, String productName, int availableItems, double price) {
         this.productID = productID;
         this.productName = productName;
-        this.numOfAvailable = numOfAvailable;
+        this.availableItems = availableItems;
         this.price = price;
     }
 
@@ -30,12 +30,12 @@ public abstract class Product {
         this.productName = productName;
     }
 
-    public int getNumOfAvailable() {
-        return numOfAvailable;
+    public int getAvailableItems() {
+        return availableItems;
     }
 
-    public void setNumOfAvailable(int numOfAvailable) {
-        this.numOfAvailable = numOfAvailable;
+    public void setAvailableItems(int availableItems) {
+        this.availableItems = availableItems;
     }
 
     public double getPrice() {
