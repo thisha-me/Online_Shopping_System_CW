@@ -1,12 +1,14 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Scanner;
 
-public class WestminsterShoppingManager {
+public class WestminsterShoppingManager implements ShoppingManager{
     private ArrayList<Product> products = new ArrayList<>();
-
+    @Override
+    public ArrayList<Product> getProducts() {
+        return null;
+    }
     public void displayMenu() {
         System.out.println("\nMenu:");
         System.out.println("1. Add a new product");
@@ -16,6 +18,7 @@ public class WestminsterShoppingManager {
         System.out.println("5. Exit");
     }
 
+    @Override
     public void addProduct() {
         Scanner scanner = new Scanner(System.in);
 
@@ -71,6 +74,7 @@ public class WestminsterShoppingManager {
         }
     }
 
+    @Override
     public void deleteProduct() {
         Scanner scanner = new Scanner(System.in);
 
@@ -122,6 +126,7 @@ public class WestminsterShoppingManager {
         }
     }
 
+    @Override
     public void printProducts() {
         Collections.sort(products);
         for (Product product : products) {
@@ -132,7 +137,8 @@ public class WestminsterShoppingManager {
         }
     }
 
-    public void saveProductToFile() {
+    @Override
+    public void saveProductsToFile() {
         try {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("products.txt"));
             outputStream.writeObject(products);
@@ -142,6 +148,7 @@ public class WestminsterShoppingManager {
         }
     }
 
+    @Override
     public void loadProductsFromFile() {
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("products.txt"))) {
             products = (ArrayList<Product>) inputStream.readObject();
