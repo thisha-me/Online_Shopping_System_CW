@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class WestminsterShoppingManager {
-    private ArrayList<Product> products=new ArrayList<>();
+    private ArrayList<Product> products = new ArrayList<>();
 
-    public void displayMenu(){
+    public void displayMenu() {
         System.out.println("\nMenu:");
         System.out.println("1. Add a new product");
         System.out.println("2. Delete a product");
@@ -16,12 +16,12 @@ public class WestminsterShoppingManager {
         System.out.println("5. Exit");
     }
 
-    public void addProduct(){
-        Scanner scanner=new Scanner(System.in);
+    public void addProduct() {
+        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Add Product");
 
-        if(products.size()>50){
+        if (products.size() > 50) {
             System.out.println("Maximum product limit reached (50 products). Cannot add more.");
             return;  // for exit method
         }
@@ -43,26 +43,26 @@ public class WestminsterShoppingManager {
         System.out.print("2. Clothing");
         String choice = scanner.next();
 
-        switch (choice){
+        switch (choice) {
             case "1":
                 System.out.print("Brand: ");
-                String brand= scanner.next();
+                String brand = scanner.next();
 
                 System.out.print("Warranty Period (Months): ");
-                int warrantyPeriod=scanner.nextInt();
+                int warrantyPeriod = scanner.nextInt();
 
-                Electronics newElectronics=new Electronics(productId,productName,availableItems,price,brand,warrantyPeriod);
+                Electronics newElectronics = new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
                 products.add(newElectronics);
                 System.out.println("Electronics added successfully");
                 break;
             case "2":
                 System.out.print("Size: ");
-                String size= scanner.next();
+                String size = scanner.next();
 
                 System.out.print("Color: ");
-                String color=scanner.next();
+                String color = scanner.next();
 
-                Clothing newClothing=new Clothing(productId,productName,availableItems,price,size,color);
+                Clothing newClothing = new Clothing(productId, productName, availableItems, price, size, color);
                 products.add(newClothing);
                 System.out.println("Clothing added successfully");
                 break;
@@ -71,10 +71,10 @@ public class WestminsterShoppingManager {
         }
     }
 
-    public void deleteProduct(){
-        Scanner scanner=new Scanner(System.in);
+    public void deleteProduct() {
+        Scanner scanner = new Scanner(System.in);
 
-        if(products.isEmpty()){
+        if (products.isEmpty()) {
             System.out.println("No products available for delete.");
             return;
         }
@@ -82,60 +82,59 @@ public class WestminsterShoppingManager {
         System.out.println("Delete Product");
 
         System.out.print("Product Id:");
-        String deleteProductId= scanner.next();
+        String deleteProductId = scanner.next();
 
-        Product deletedProduct=null;
-        for(Product product:products){
-            if (product.equals(deleteProductId)){
-                deletedProduct=product;
+        Product deletedProduct = null;
+        for (Product product : products) {
+            if (product.equals(deleteProductId)) {
+                deletedProduct = product;
                 System.out.println("Product Delete ");
                 break;
             }
         }
 
-        if(deletedProduct==null){
+        if (deletedProduct == null) {
             System.out.println("Product with ID " + deleteProductId + " not found.");
             return;
         }
 
         System.out.println("Deleted Product");
-        if(deletedProduct instanceof Electronics){
+        if (deletedProduct instanceof Electronics) {
             System.out.println(
                     "Type: Electronics" +
-                    "\nID: " + deletedProduct.getProductID() +
-                    "\nName: " + deletedProduct.getProductName() +
-                    "\nBrand: " + ((Electronics) deletedProduct).getBrand()+
-                    "\nWarranty: "+((Electronics) deletedProduct).getWarrantyPeriod()+" months"+
-                    "\nPrice: "+deletedProduct.getPrice()+
-                    "\nProduct Left: "+deletedProduct.getAvailableItems()
+                            "\nID: " + deletedProduct.getProductID() +
+                            "\nName: " + deletedProduct.getProductName() +
+                            "\nBrand: " + ((Electronics) deletedProduct).getBrand() +
+                            "\nWarranty: " + ((Electronics) deletedProduct).getWarrantyPeriod() + " months" +
+                            "\nPrice: " + deletedProduct.getPrice() +
+                            "\nProduct Left: " + deletedProduct.getAvailableItems()
             );
-        }
-        else if(deletedProduct instanceof Clothing){
+        } else if (deletedProduct instanceof Clothing) {
             System.out.println(
                     "Type: Clothing" +
-                    "\nID: " + deletedProduct.getProductID() +
-                    "\nName: " + deletedProduct.getProductName() +
-                    "\nSize: " +((Clothing) deletedProduct).getSize() +
-                    "\nColor: " + ((Clothing) deletedProduct).getColor()+
-                    "\nPrice: "+deletedProduct.getPrice()+
-                    "\nProduct Left: "+deletedProduct.getAvailableItems()
+                            "\nID: " + deletedProduct.getProductID() +
+                            "\nName: " + deletedProduct.getProductName() +
+                            "\nSize: " + ((Clothing) deletedProduct).getSize() +
+                            "\nColor: " + ((Clothing) deletedProduct).getColor() +
+                            "\nPrice: " + deletedProduct.getPrice() +
+                            "\nProduct Left: " + deletedProduct.getAvailableItems()
             );
         }
     }
 
-    public void printProducts(){
+    public void printProducts() {
         Collections.sort(products);
-        for (Product product:products){
-            if(product instanceof Electronics)
+        for (Product product : products) {
+            if (product instanceof Electronics)
                 System.out.println((Electronics) product);
             else if (product instanceof Clothing)
                 System.out.println((Clothing) product);
         }
     }
 
-    public void saveProductToFile(){
+    public void saveProductToFile() {
         try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream ("products.txt"));
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("products.txt"));
             outputStream.writeObject(products);
             System.out.println("Products saved to file.");
         } catch (IOException e) {
