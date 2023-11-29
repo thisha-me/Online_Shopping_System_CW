@@ -1,20 +1,12 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class WestminsterShoppingManager {
-    private static ArrayList<Product> products=new ArrayList<>();
-    public static void main(String[] args) {
-        Scanner scanner=new Scanner(System.in);
-        String choice;
+    private ArrayList<Product> products=new ArrayList<>();
 
-        do {
-            displayMenu();
-            System.out.print("Enter choice: ");
-            choice= scanner.next();
-        }while (!choice.equals("5"));
-    }
-
-    public static void displayMenu(){
+    public void displayMenu(){
         System.out.println("\nMenu:");
         System.out.println("1. Add a new product");
         System.out.println("2. Delete a product");
@@ -23,7 +15,7 @@ public class WestminsterShoppingManager {
         System.out.println("5. Exit");
     }
 
-    public static void addProduct(){
+    public void addProduct(){
         Scanner scanner=new Scanner(System.in);
 
         System.out.println("Add Product");
@@ -78,7 +70,7 @@ public class WestminsterShoppingManager {
         }
     }
 
-    public static void deleteProduct(){
+    public void deleteProduct(){
         Scanner scanner=new Scanner(System.in);
 
         if(products.isEmpty()){
@@ -112,7 +104,7 @@ public class WestminsterShoppingManager {
                     "\nID: " + deletedProduct.getProductID() +
                     "\nName: " + deletedProduct.getProductName() +
                     "\nBrand: " + ((Electronics) deletedProduct).getBrand()+
-                    "\nWarranty: "+((Electronics) deletedProduct).getWarrantyPeriod()+
+                    "\nWarranty: "+((Electronics) deletedProduct).getWarrantyPeriod()+" months"+
                     "\nPrice: "+deletedProduct.getPrice()+
                     "\nProduct Left: "+deletedProduct.getAvailableItems()
             );
@@ -128,8 +120,15 @@ public class WestminsterShoppingManager {
                     "\nProduct Left: "+deletedProduct.getAvailableItems()
             );
         }
+    }
 
-        //TODO complete this method
-
+    public void printProducts(){
+        Collections.sort(products);
+        for (Product product:products){
+            if(product instanceof Electronics)
+                System.out.println((Electronics) product);
+            else if (product instanceof Clothing)
+                System.out.println((Clothing) product);
+        }
     }
 }

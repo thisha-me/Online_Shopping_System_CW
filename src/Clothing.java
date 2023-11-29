@@ -1,4 +1,4 @@
-public class Clothing extends Product{
+public class Clothing extends Product {
     private String size;
     private String color;
 
@@ -25,5 +25,16 @@ public class Clothing extends Product{
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    @Override
+    public String toString() {
+        return "Type: Clothing" +
+                "\nID: " + getProductID() +
+                "\nName: " + getProductName() +
+                "\nSize: " + getSize() +
+                "\nColor: " + getColor() +
+                "\nPrice: " + getPrice() +
+                "\nAvailable: " + getAvailableItems();
     }
 }

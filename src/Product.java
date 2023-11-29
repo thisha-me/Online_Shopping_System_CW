@@ -1,4 +1,4 @@
-public abstract class Product {
+public abstract class Product implements Comparable<Product> {
     private String productID;
     private String productName;
     private int availableItems;
@@ -54,5 +54,10 @@ public abstract class Product {
         Product product = (Product) o;
 
         return productID.equals(product.productID);
+    }
+
+    @Override
+    public int compareTo(Product o) {
+        return productID.compareTo(o.getProductID());
     }
 }
