@@ -8,6 +8,7 @@ public interface ShoppingManager {
     void printProducts();
 
     void saveProductsToFile();
+
     void loadProductsFromFile();
 
     ArrayList<Product> getProducts();

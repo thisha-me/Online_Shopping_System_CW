@@ -4,10 +4,15 @@ import java.util.Collections;
 import java.util.Scanner;
 
 public class WestminsterShoppingManager implements ShoppingManager{
-    private ArrayList<Product> products = new ArrayList<>();
+
+    private ArrayList<Product> products;
+    public WestminsterShoppingManager() {
+        products = new ArrayList<>();
+    }
+
     @Override
     public ArrayList<Product> getProducts() {
-        return null;
+        return products;
     }
     public void displayMenu() {
         System.out.println("\nMenu:");
