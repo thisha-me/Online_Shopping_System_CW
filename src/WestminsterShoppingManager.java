@@ -14,13 +14,29 @@ public class WestminsterShoppingManager implements ShoppingManager{
     public ArrayList<Product> getProducts() {
         return products;
     }
+    private final Scanner scanner=new Scanner(System.in);
     public void displayMenu() {
-        System.out.println("\nMenu:");
-        System.out.println("1. Add a new product");
-        System.out.println("2. Delete a product");
-        System.out.println("3. Print list of products");
-        System.out.println("4. Save products to file");
-        System.out.println("5. Exit");
+        String choice;
+        do{
+            System.out.println("\nMenu:");
+            System.out.println("1. Add a new product");
+            System.out.println("2. Delete a product");
+            System.out.println("3. Print list of products");
+            System.out.println("4. Save products to file");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice");
+
+            choice= scanner.next();
+
+            switch (choice) {
+                case "1" -> addProduct();
+                case "2" -> deleteProduct();
+                case "3" -> printProducts();
+                case "4" -> saveProductsToFile();
+                case "5" -> System.out.println("Exit the program...");
+            }
+        }while (!choice.equals("5"));
+
     }
 
     @Override
