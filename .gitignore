@@ -28,6 +28,4 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-##Testing
-src/Test.java
 src/Test.java
