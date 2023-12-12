@@ -129,6 +129,12 @@ public class WestminsterShoppingManager implements ShoppingManager{
                             "\nProduct Left: " + deletedProduct.getAvailableItems()
             );
         }
+        System.out.println("Are you sure to delete this product(Y/n)?");
+        String yN=scanner.next().toUpperCase();
+        if(yN.equals("Y")){
+            products.remove(deletedProduct);
+            System.out.println("Product delete successfully");
+        }
     }
 
     @Override
