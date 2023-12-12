@@ -1,3 +1,5 @@
+import utils.InputValidator;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
         return products;
     }
     private final Scanner scanner=new Scanner(System.in);
+    private final InputValidator inputValidator=new InputValidator();
     public void displayMenu() {
         String choice;
         do{
@@ -41,7 +44,6 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     @Override
     public void addProduct() {
-        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Add Product");
 
@@ -57,10 +59,10 @@ public class WestminsterShoppingManager implements ShoppingManager{
         String productName = scanner.next();
 
         System.out.print("Available Items: ");
-        int availableItems = scanner.nextInt();
+        int availableItems = inputValidator.get_int();
 
         System.out.print("Price: ");
-        double price = scanner.nextDouble();
+        double price = inputValidator.get_double();
 
         System.out.println("Select product type to add:");
         System.out.println("1. Electronics");
@@ -73,7 +75,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
                 String brand = scanner.next();
 
                 System.out.print("Warranty Period (Months): ");
-                int warrantyPeriod = scanner.nextInt();
+                int warrantyPeriod = inputValidator.get_int();
 
                 Electronics newElectronics = new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
                 products.add(newElectronics);
@@ -97,8 +99,6 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     @Override
     public void deleteProduct() {
-        Scanner scanner = new Scanner(System.in);
-
         if (products.isEmpty()) {
             System.out.println("No products available for delete.");
             return;
@@ -184,4 +184,5 @@ public class WestminsterShoppingManager implements ShoppingManager{
             System.out.println("No saved products found.");
         }
     }
+
 }
