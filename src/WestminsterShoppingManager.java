@@ -8,16 +8,18 @@ import java.util.Scanner;
 public class WestminsterShoppingManager implements ShoppingManager{
 
     private ArrayList<Product> products;
+    private final Scanner scanner=new Scanner(System.in);
+    private final InputValidator inputValidator=new InputValidator();
     public WestminsterShoppingManager() {
         products = new ArrayList<>();
+        loadProductsFromFile();
     }
 
     @Override
     public ArrayList<Product> getProducts() {
         return products;
     }
-    private final Scanner scanner=new Scanner(System.in);
-    private final InputValidator inputValidator=new InputValidator();
+
     public void displayMenu() {
         String choice;
         do{
@@ -27,8 +29,8 @@ public class WestminsterShoppingManager implements ShoppingManager{
             System.out.println("3. Print list of products");
             System.out.println("4. Save products to file");
             System.out.println("5. Exit");
-            System.out.print("Enter choice");
 
+            System.out.print("Enter choice: ");
             choice= scanner.next();
 
             switch (choice) {
@@ -37,6 +39,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
                 case "3" -> printProducts();
                 case "4" -> saveProductsToFile();
                 case "5" -> System.out.println("Exit the program...");
+                default -> System.out.println("Invalid choice.");
             }
         }while (!choice.equals("5"));
 
@@ -62,16 +65,17 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
         double price = inputValidator.get_double("Price: ");
 
-        System.out.println("Select product type to add:");
+
         System.out.println("1. Electronics");
-        System.out.print("2. Clothing");
+        System.out.println("2. Clothing");
+        System.out.print("Select product type to add:");
         String choice = scanner.next();
 
         switch (choice) {
             case "1":
                 System.out.print("Brand: ");
                 String brand = scanner.next();
-                
+
                 int warrantyPeriod = inputValidator.get_int("Warranty Period (Months): ");
 
                 Electronics newElectronics = new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
@@ -104,7 +108,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
         System.out.println("Delete Product");
 
         System.out.print("Product Id:");
-        String deleteProductId = scanner.next();
+        String deleteProductId = scanner.next().strip();
 
         Product deletedProduct = null;
         for (Product product : products) {
@@ -121,27 +125,8 @@ public class WestminsterShoppingManager implements ShoppingManager{
         }
 
         System.out.println("Deleted Product");
-        if (deletedProduct instanceof Electronics) {
-            System.out.println(
-                    "Type: Electronics" +
-                            "\nID: " + deletedProduct.getProductID() +
-                            "\nName: " + deletedProduct.getProductName() +
-                            "\nBrand: " + ((Electronics) deletedProduct).getBrand() +
-                            "\nWarranty: " + ((Electronics) deletedProduct).getWarrantyPeriod() + " months" +
-                            "\nPrice: " + deletedProduct.getPrice() +
-                            "\nProduct Left: " + deletedProduct.getAvailableItems()
-            );
-        } else if (deletedProduct instanceof Clothing) {
-            System.out.println(
-                    "Type: Clothing" +
-                            "\nID: " + deletedProduct.getProductID() +
-                            "\nName: " + deletedProduct.getProductName() +
-                            "\nSize: " + ((Clothing) deletedProduct).getSize() +
-                            "\nColor: " + ((Clothing) deletedProduct).getColor() +
-                            "\nPrice: " + deletedProduct.getPrice() +
-                            "\nProduct Left: " + deletedProduct.getAvailableItems()
-            );
-        }
+        System.out.println(deletedProduct);
+
         System.out.println("Are you sure to delete this product(Y/n)?");
         String yN=scanner.next().toUpperCase();
         if(yN.equals("Y")){
@@ -154,10 +139,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
     public void printProducts() {
         Collections.sort(products);
         for (Product product : products) {
-            if (product instanceof Electronics)
-                System.out.println((Electronics) product);
-            else if (product instanceof Clothing)
-                System.out.println((Clothing) product);
+            System.out.println(product+"\n");
         }
     }
 
@@ -169,6 +151,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
             System.out.println("Products saved to file.");
         } catch (IOException e) {
             System.out.println("Error saving products to file.");
+            System.out.println(e);
         }
     }
 
@@ -179,6 +162,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
             System.out.println("Products loaded from file.");
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("No saved products found.");
+            System.out.println(e);
         }
     }
 

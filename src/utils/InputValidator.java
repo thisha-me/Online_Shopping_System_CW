@@ -12,7 +12,7 @@ public class InputValidator {
                 System.out.print(input_txt);
                 return scanner.nextDouble();
             }catch (InputMismatchException e){
-                System.out.println("Invalid input \n Input must be double value");
+                System.out.println("Input must be double value!");
                 scanner.next();
             }
         }
@@ -24,7 +24,7 @@ public class InputValidator {
                 System.out.print(input_txt);
                 return scanner.nextInt();
             }catch (InputMismatchException e){
-                System.out.println("Invalid input \n Input must be integer value");
+                System.out.println("Input must be integer value!");
                 scanner.next();
             }
         }

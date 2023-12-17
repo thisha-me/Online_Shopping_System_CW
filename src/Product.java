@@ -1,4 +1,7 @@
-public abstract class Product implements Comparable<Product> {
+import java.io.Serializable;
+import java.util.Objects;
+
+public abstract class Product implements Comparable<Product>, Serializable {
     private String productID;
     private String productName;
     private int availableItems;
@@ -46,14 +49,8 @@ public abstract class Product implements Comparable<Product> {
         this.price = price;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Product product = (Product) o;
-
-        return productID.equals(product.productID);
+    public boolean equals(String check_productID) {
+        return productID.equals(check_productID);
     }
 
     @Override
