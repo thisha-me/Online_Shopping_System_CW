@@ -37,4 +37,15 @@ public class Electronics extends Product{
                 "\nPrice: "+getPrice()+
                 "\nAvailable : "+getAvailableItems();
     }
+
+    @Override
+    public String toCSV() {
+        return "Electronics," + getProductID() + "," + getProductName() + "," +
+                getAvailableItems() + "," + getPrice() + "," + getBrand() + "," + getWarrantyPeriod()+"\n";
+    }
+
+    public static Product fromCSV(String csv) {
+        String[] data = csv.split(",");
+        return new Electronics(data[1], data[2], Integer.parseInt(data[3]), Double.parseDouble(data[4]), data[5], Integer.parseInt(data[6]));
+    }
 }

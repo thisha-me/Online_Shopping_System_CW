@@ -57,4 +57,6 @@ public abstract class Product implements Comparable<Product>, Serializable {
     public int compareTo(Product o) {
         return productID.compareTo(o.getProductID());
     }
+
+    public abstract String toCSV();
 }

@@ -1,4 +1,4 @@
-import utils.InputValidator;
+import utils.InputValidator; //custom defined input validators
 
 import java.io.*;
 import java.util.ArrayList;
@@ -127,11 +127,12 @@ public class WestminsterShoppingManager implements ShoppingManager{
         System.out.println("Deleted Product");
         System.out.println(deletedProduct);
 
-        System.out.println("Are you sure to delete this product(Y/n)?");
-        String yN=scanner.next().toUpperCase();
-        if(yN.equals("Y")){
+        System.out.print("Are you sure to delete this product(Y/n)?");
+        String yN=scanner.next().toLowerCase();
+        if(yN.equals("y")){
             products.remove(deletedProduct);
             System.out.println("Product delete successfully");
+            System.out.println(deletedProduct.getAvailableItems()+" left the system");
         }
     }
 
@@ -145,24 +146,33 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     @Override
     public void saveProductsToFile() {
-        try {
-            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("products.txt"));
-            outputStream.writeObject(products);
-            System.out.println("Products saved to file.");
+        try (FileWriter writer=new FileWriter("products.csv")){
+            for (Product product:products){
+                writer.write(product.toCSV());
+            }
+            System.out.println("Product Save to File Successfully");
         } catch (IOException e) {
             System.out.println("Error saving products to file.");
-            System.out.println(e);
         }
     }
 
     @Override
     public void loadProductsFromFile() {
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("products.txt"))) {
-            products = (ArrayList<Product>) inputStream.readObject();
-            System.out.println("Products loaded from file.");
-        } catch (IOException | ClassNotFoundException e) {
+        try  (BufferedReader reader = new BufferedReader(new FileReader("products.csv"))){
+            String line;
+            while ((line= reader.readLine())!=null){
+                String[] data=line.split(",");
+                if(data.length>0){
+                    String productType=data[0]; // get product type
+                    if(productType.equals("Electronics")){
+                        products.add(Electronics.fromCSV(line));
+                    } else if (productType.equals("Clothing")) {
+                        products.add(Clothing.fromCSV(line));
+                    }
+                }
+            }
+        } catch (IOException e) {
             System.out.println("No saved products found.");
-            System.out.println(e);
         }
     }
 
