@@ -6,9 +6,10 @@ import java.util.Scanner;
 public class InputValidator {
     private final Scanner scanner=new Scanner(System.in);
 
-    public double get_double(){
+    public double get_double(String input_txt){
         while (true){
             try {
+                System.out.print(input_txt);
                 return scanner.nextDouble();
             }catch (InputMismatchException e){
                 System.out.println("Invalid input \n Input must be double value");
@@ -17,9 +18,10 @@ public class InputValidator {
         }
     }
 
-    public int get_int(){
+    public int get_int(String input_txt){
         while (true){
             try {
+                System.out.print(input_txt);
                 return scanner.nextInt();
             }catch (InputMismatchException e){
                 System.out.println("Invalid input \n Input must be integer value");

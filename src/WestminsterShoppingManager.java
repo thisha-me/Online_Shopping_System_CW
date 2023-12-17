@@ -58,11 +58,9 @@ public class WestminsterShoppingManager implements ShoppingManager{
         System.out.print("Product Name: ");
         String productName = scanner.next();
 
-        System.out.print("Available Items: ");
-        int availableItems = inputValidator.get_int();
+        int availableItems = inputValidator.get_int("Available Items: ");
 
-        System.out.print("Price: ");
-        double price = inputValidator.get_double();
+        double price = inputValidator.get_double("Price: ");
 
         System.out.println("Select product type to add:");
         System.out.println("1. Electronics");
@@ -73,9 +71,8 @@ public class WestminsterShoppingManager implements ShoppingManager{
             case "1":
                 System.out.print("Brand: ");
                 String brand = scanner.next();
-
-                System.out.print("Warranty Period (Months): ");
-                int warrantyPeriod = inputValidator.get_int();
+                
+                int warrantyPeriod = inputValidator.get_int("Warranty Period (Months): ");
 
                 Electronics newElectronics = new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
                 products.add(newElectronics);
