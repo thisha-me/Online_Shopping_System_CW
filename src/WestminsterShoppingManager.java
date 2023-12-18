@@ -2,21 +2,20 @@ import utils.DBConnection;
 import utils.InputValidator; //custom defined input validators
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
-public class WestminsterShoppingManager implements ShoppingManager{
+public class WestminsterShoppingManager implements ShoppingManager {
 
-    private ArrayList<Product> products;
-    private final Scanner scanner=new Scanner(System.in);
-    private final InputValidator inputValidator=new InputValidator();
+    private final ArrayList<Product> products;
+    private final Scanner scanner = new Scanner(System.in);
+    private final InputValidator inputValidator = new InputValidator();
+
     public WestminsterShoppingManager() {
         products = new ArrayList<>();
-        loadProductsFromFile();
+        loadProducts();
     }
 
     @Override
@@ -26,7 +25,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     public void displayMenu() {
         String choice;
-        do{
+        do {
             System.out.println("\nMenu:");
             System.out.println("1. Add a new product");
             System.out.println("2. Delete a product");
@@ -35,7 +34,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
             System.out.println("5. Exit");
 
             System.out.print("Enter choice: ");
-            choice= scanner.next();
+            choice = scanner.next();
 
             switch (choice) {
                 case "1" -> addProduct();
@@ -45,7 +44,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
                 case "5" -> System.out.println("Exit the program...");
                 default -> System.out.println("Invalid choice.");
             }
-        }while (!choice.equals("5"));
+        } while (!choice.equals("5"));
 
     }
 
@@ -132,11 +131,11 @@ public class WestminsterShoppingManager implements ShoppingManager{
         System.out.println(deletedProduct);
 
         System.out.print("Are you sure to delete this product(Y/n)?");
-        String yN=scanner.next().toLowerCase();
-        if(yN.equals("y")){
+        String yN = scanner.next().toLowerCase();
+        if (yN.equals("y")) {
             products.remove(deletedProduct);
             System.out.println("Product delete successfully");
-            System.out.println(deletedProduct.getAvailableItems()+" left the system");
+            System.out.println(deletedProduct.getAvailableItems() + " left the system");
         }
     }
 
@@ -144,7 +143,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
     public void printProducts() {
         Collections.sort(products);
         for (Product product : products) {
-            System.out.println(product+"\n");
+            System.out.println(product + "\n");
         }
     }
 
@@ -162,13 +161,13 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     @Override
     public void loadProductsFromFile() {
-        try  (BufferedReader reader = new BufferedReader(new FileReader("products.csv"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader("products.csv"))) {
             String line;
-            while ((line= reader.readLine())!=null){
-                String[] data=line.split(",");
-                if(data.length>0){
-                    String productType=data[0]; // get product type
-                    if(productType.equals("Electronics")){
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length > 0) {
+                    String productType = data[0]; // get product type
+                    if (productType.equals("Electronics")) {
                         products.add(Electronics.fromCSV(line));
                     } else if (productType.equals("Clothing")) {
                         products.add(Clothing.fromCSV(line));
@@ -203,7 +202,7 @@ public class WestminsterShoppingManager implements ShoppingManager{
         }
     }
 
-    private void saveClothing(Clothing clothing, Connection connection) throws SQLException{
+    private void saveClothing(Clothing clothing, Connection connection) throws SQLException {
         String sql = "INSERT IGNORE INTO Clothing (productID, size, color) VALUES (?, ?, ?)";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, clothing.getProductID());
@@ -212,12 +211,60 @@ public class WestminsterShoppingManager implements ShoppingManager{
         statement.executeUpdate();
     }
 
-    private void saveElectronics(Electronics electronics, Connection connection) throws SQLException{
+    private void saveElectronics(Electronics electronics, Connection connection) throws SQLException {
         String sql = "INSERT IGNORE INTO Electronics (productID, brand, warrantyPeriod) VALUES (?, ?, ?)";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, electronics.getProductID());
         statement.setString(2, electronics.getBrand());
         statement.setInt(3, electronics.getWarrantyPeriod());
         statement.executeUpdate();
+    }
+
+    public void loadProducts() {
+        try {
+            Connection connection = DBConnection.getConnection();
+            loadElectronics(connection);
+            loadClothing(connection);
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void loadElectronics(Connection connection) throws SQLException {
+        String electronicSQL = "SELECT p.productID, p.productName, p.availableItems, p.price, e.brand, e.warrantyPeriod " +
+                "FROM Product p INNER JOIN Electronics e " +
+                "ON p.productID = e.productID;";
+
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(electronicSQL);
+
+        while (resultSet.next()) {
+            String productId = resultSet.getString("productID");
+            String productName = resultSet.getString("productName");
+            int availableItems = resultSet.getInt("availableItems");
+            double price = resultSet.getDouble("price");
+            String brand = resultSet.getString("brand");
+            int warrantyPeriod = resultSet.getInt("warrantyPeriod");
+
+            products.add(new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod));
+        }
+    }
+
+    private void loadClothing(Connection connection) throws SQLException {
+        String clothingSQL = "SELECT p.productID, p.productName, p.availableItems, p.price, c.size, c.color " +
+                "FROM Product p INNER JOIN Clothing c ON p.productID = c.productID";
+
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(clothingSQL);
+
+        while (resultSet.next()) {
+            String productId = resultSet.getString("productID");
+            String productName = resultSet.getString("productName");
+            int availableItems = resultSet.getInt("availableItems");
+            double price = resultSet.getDouble("price");
+            String size = resultSet.getString("size");
+            String color = resultSet.getString("color");
+            products.add(new Clothing(productId, productName, availableItems, price, size, color));
+        }
     }
 }
