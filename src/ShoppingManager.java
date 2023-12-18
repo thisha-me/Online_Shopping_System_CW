@@ -7,7 +7,7 @@ public interface ShoppingManager {
 
     void printProducts();
 
-//    void saveProductsToFile();
+    void saveProductsToFile();
 
     void loadProductsFromFile();
 
