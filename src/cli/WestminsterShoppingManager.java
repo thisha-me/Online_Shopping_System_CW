@@ -1,3 +1,5 @@
+package cli;
+
 import utils.DBConnection;
 import utils.InputValidator; //custom defined input validators
 

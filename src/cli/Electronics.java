@@ -1,3 +1,5 @@
+package cli;
+
 public class Electronics extends Product{
     private String brand;
     private int warrantyPeriod; //months

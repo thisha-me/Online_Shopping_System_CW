@@ -1,5 +1,6 @@
+package cli;
+
 import java.io.Serializable;
-import java.util.Objects;
 
 public abstract class Product implements Comparable<Product>, Serializable {
     private String productID;
