@@ -1,10 +1,14 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import cli.Clothing;
@@ -18,8 +22,15 @@ public class ShoppingCenterGUI extends JFrame {
     private JButton shoppingCart;
     private JTable productTable;
     private DefaultTableModel productTableModel;
+    private JLabel productDetails;
+    private JLabel productTitle;
+    private JLabel productDetail;
+    private JButton addToCart;
+
     
     public ShoppingCenterGUI() {
+        WestminsterShoppingManager manager=new WestminsterShoppingManager();
+        ArrayList<Product> products= manager.getProducts();
         //frame
         setTitle("Westminster Shopping Center");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,8 +58,6 @@ public class ShoppingCenterGUI extends JFrame {
 
         //table
         productTable=new JTable();
-        productTable.setPreferredScrollableViewportSize(new Dimension(450,63));
-        productTable.setFillsViewportHeight(true);
 
         productTableModel=new DefaultTableModel();
         selectCategoryModel("All");
@@ -60,10 +69,65 @@ public class ShoppingCenterGUI extends JFrame {
 
         upperPanel.add(categoryLabel);
         upperPanel.add(category);
-//        upperPanel.add(tableContainer);
+
+        JPanel lowerPanel = new JPanel();
+        lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.Y_AXIS));
+
+        productTitle = new JLabel("Selected Product - Details");
+        productDetail = new JLabel("<html><div><b>Selected Product - Details</b></div>" +
+                "<div></div>" +
+                "<div></div>" +
+                "<div></div>" +
+                "<div></div>" +
+                "<div></div>" +
+                "<div></div>" +
+                "</html>");
+        addToCart = new JButton("Add to Cart");
+
+        lowerPanel.add(productTitle);
+        lowerPanel.add(productDetail);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(addToCart);
+
+        lowerPanel.add(buttonPanel);
+
+        productTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int selectedRow = productTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    String productId = (String) productTable.getValueAt(selectedRow, 0);
+                    for (Product product : products) {
+                        if (product.getProductID().equals(productId)) {// Correct comparison
+                            productDetail.setText("<html>" +
+                                    "<div><b>Selected Product - Details</b></div>" +
+                                    product.toString().replace("\n","<br>") +
+                                    "</html>");
+
+                        }
+                    }
+                }
+            }
+        });
 
         this.add(upperPanel,BorderLayout.PAGE_START);
         this.add(tableContainer);
+        this.add(lowerPanel,BorderLayout.PAGE_END);
+
+        this.getContentPane().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                productDetail.setText("<html><div><b>Selected Product - Details</b></div>" +
+                        "<div></div>" +
+                        "<div></div>" +
+                        "<div></div>" +
+                        "<div></div>" +
+                        "<div></div>" +
+                        "<div></div>" +
+                        "</html>"); // Clear the product details
+            }
+        });
 
     }
 

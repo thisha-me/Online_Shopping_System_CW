@@ -31,13 +31,13 @@ public class Clothing extends Product {
 
     @Override
     public String toString() {
-        return "Type: Clothing" +
-                "\nID: " + getProductID() +
+        return "Product ID: " + getProductID() +
+                "\nCategory: Clothing" +
                 "\nName: " + getProductName() +
                 "\nSize: " + getSize() +
                 "\nColor: " + getColor() +
                 "\nPrice: " + getPrice() +
-                "\nAvailable: " + getAvailableItems();
+                "\nItem Available: " + getAvailableItems();
     }
 
     @Override

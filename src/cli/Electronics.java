@@ -31,13 +31,13 @@ public class Electronics extends Product{
 
     @Override
     public String toString() {
-        return "Type: Electronics" +
-                "\nID: " + getProductID() +
+        return "Product ID: " + getProductID() +
+                "\nCategory: Electronics" +
                 "\nName: " + getProductName() +
                 "\nBrand: " + getBrand()+
                 "\nWarranty: "+getWarrantyPeriod()+" months"+
                 "\nPrice: "+getPrice()+
-                "\nAvailable : "+getAvailableItems();
+                "\nItem Available : "+getAvailableItems();
     }
 
     @Override
