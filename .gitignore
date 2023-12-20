@@ -30,3 +30,4 @@ bin/
 
 src/Test.java
 products.csv
+src/gui/ShoppingCenter.java
