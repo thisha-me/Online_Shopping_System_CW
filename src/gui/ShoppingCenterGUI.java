@@ -1,9 +1,7 @@
 package gui;
 
-import cli.Clothing;
-import cli.Electronics;
-import cli.Product;
-import cli.WestminsterShoppingManager;
+import cli.*;
+import gui.def.CustomTableCellRenderer;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -20,20 +18,22 @@ import java.util.Collections;
 public class ShoppingCenterGUI extends JFrame {
     private JLabel categoryLabel;
     private JComboBox<String> category;
-    private JButton shoppingCart;
+    private JButton shoppingCartBtn;
     private JTable productTable;
     private DefaultTableModel productTableModel;
-    private JButton sortByProductId;
-    private JButton sortByName;
-    private JButton sortByPrice;
+    private JButton sortByProductIdBtn;
+    private JButton sortByNameBtn;
+    private JButton sortByPriceBtn;
     private JLabel productTitle;
     private JLabel productDetail;
-    private JButton addToCart;
+    private JButton addToCartBtn;
     private ArrayList<Product> products;
+    private ShoppingCart shoppingCart;
 
     public ShoppingCenterGUI() {
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         products = shoppingManager.getProducts();
+        shoppingCart=new ShoppingCart();
         initializeFrame();
         createUpperPanel();
         createProductTable();
@@ -64,25 +64,27 @@ public class ShoppingCenterGUI extends JFrame {
         category = new JComboBox<>(categories);
         category.setSelectedIndex(0);
 
-        sortByName = new JButton("Sort By Name");
-        sortByProductId = new JButton("Sort By ID");
-        sortByPrice=new JButton("Sort By Price");
+        JPanel sortPanel=new JPanel(new FlowLayout());
+        sortByNameBtn = new JButton("Sort By Name");
+        sortByProductIdBtn = new JButton("Sort By ID");
+        sortByPriceBtn=new JButton("Sort By Price");
+        sortPanel.add(sortByProductIdBtn);
+        sortPanel.add(sortByNameBtn);
+        sortPanel.add(sortByPriceBtn);
 
         // Add components to the center panel
         centerPanel.add(categoryLabel);
         centerPanel.add(category);
-        centerPanel.add(sortByProductId);
-        centerPanel.add(sortByName);
-        centerPanel.add(sortByPrice);
 
         // Cart button aligned near the right page margin
-        shoppingCart = new JButton("Shopping Cart");
+        shoppingCartBtn = new JButton("Shopping Cart");
         JPanel cartPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        cartPanel.add(shoppingCart);
+        cartPanel.add(shoppingCartBtn);
 
         // Add components to the upper panel
         upperPanel.add(centerPanel, BorderLayout.CENTER);
         upperPanel.add(cartPanel, BorderLayout.LINE_END);
+        upperPanel.add(sortPanel,BorderLayout.PAGE_END);
 
         this.add(upperPanel, BorderLayout.PAGE_START);
     }
@@ -90,6 +92,8 @@ public class ShoppingCenterGUI extends JFrame {
 
     private void createProductTable() {
         productTable = new JTable();
+        // Assuming productTable is your JTable
+        productTable.setDefaultRenderer(Object.class, new CustomTableCellRenderer());
 
         productTableModel = new DefaultTableModel();
         productTable.setModel(productTableModel);
@@ -107,9 +111,9 @@ public class ShoppingCenterGUI extends JFrame {
         productTitle = new JLabel("Selected Product - Details");
         productDetail = new JLabel("<html>" + "<br/>".repeat(6) + "</html>");
 
-        addToCart = new JButton("Add to Cart");
+        addToCartBtn = new JButton("Add to Cart");
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(addToCart);
+        buttonPanel.add(addToCartBtn);
 
         lowerPanel.add(productTitle);
         lowerPanel.add(productDetail);
@@ -119,6 +123,7 @@ public class ShoppingCenterGUI extends JFrame {
     }
 
     String selectedOption = "All";
+    Product selectedProduct=null;
 
     private void addListeners() {
 
@@ -139,7 +144,8 @@ public class ShoppingCenterGUI extends JFrame {
                 if (selectedRow != -1) {
                     String productId = (String) productTable.getValueAt(selectedRow, 0);
                     for (Product product : products) {
-                        if (product.getProductID().equals(productId)) {// Correct comparison
+                        if (product.equals(productId)) {// Correct comparison
+                            selectedProduct=product;
                             productDetail.setText("<html>" + product.toString().replace("\n", "<br/>") + "</html>");
                         }
                     }
@@ -147,7 +153,7 @@ public class ShoppingCenterGUI extends JFrame {
             }
         });
 
-        sortByProductId.addActionListener(new ActionListener() {
+        sortByProductIdBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Collections.sort(products);
@@ -155,7 +161,7 @@ public class ShoppingCenterGUI extends JFrame {
             }
         });
 
-        sortByName.addActionListener(new ActionListener() {
+        sortByNameBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 products.sort(Product.compareByName);
@@ -163,7 +169,7 @@ public class ShoppingCenterGUI extends JFrame {
             }
         });
 
-        sortByPrice.addActionListener(new ActionListener() {
+        sortByPriceBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 products.sort(Product.compareByPrice);
@@ -171,10 +177,33 @@ public class ShoppingCenterGUI extends JFrame {
             }
         });
 
+        addToCartBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(selectedProduct==null){
+                    JOptionPane.showMessageDialog(new JFrame(), "Before add to cart you should select the product", "Dialog",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                dialogButton=JOptionPane.showConfirmDialog (null,
+                        "<html>Do you want to add this product to cart?<br>" +
+                                selectedProduct.toString().replace("\n","<br>") +
+                                "<html>",
+                        " ",dialogButton);
+                if (dialogButton == JOptionPane.YES_OPTION){
+                    shoppingCart.addProduct(selectedProduct);
+                    System.out.println(selectedProduct.getProductID()+" product added");
+                }
+            }
+        });
+
         this.getContentPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 productDetail.setText("<html>" + "<br/>".repeat(6) + "</html>"); // Clear the product details
+                selectedProduct=null;
             }
         });
     }
@@ -214,7 +243,8 @@ public class ShoppingCenterGUI extends JFrame {
                 product.getProductName(),
                 category,
                 product.getPrice(),
-                info
+                info,
+                product.getAvailableItems() //send for check
         };
     }
 
