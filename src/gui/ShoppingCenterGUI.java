@@ -32,17 +32,20 @@ public class ShoppingCenterGUI extends JFrame {
     private ArrayList<Product> products;
     private ArrayList<Product> updatedProductsByCategory;
     private ShoppingCart shoppingCart;
+    private ShoppingCartGUI shoppingCartGUI;
 
     public ShoppingCenterGUI() {
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         products = shoppingManager.getProducts();
         updatedProductsByCategory= (ArrayList<Product>) products.clone();
         shoppingCart=new ShoppingCart();
+        shoppingCartGUI=new ShoppingCartGUI(shoppingCart);
         initializeFrame();
         createUpperPanel();
         createProductTable();
         createLowerPanel();
         addListeners();
+
     }
 
     private void initializeFrame() {
@@ -50,6 +53,8 @@ public class ShoppingCenterGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 1024);
         setLayout(new BorderLayout());
+        setLocationRelativeTo(null);
+        this.setVisible(true);
     }
 
     private void createUpperPanel() {
@@ -210,6 +215,14 @@ public class ShoppingCenterGUI extends JFrame {
                 selectedProduct=null;
             }
         });
+
+        shoppingCartBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                shoppingCartGUI.setVisible(!shoppingCartGUI.isVisible());
+
+            }
+        });
     }
 
     private void selectCategoryModel(String type) {
@@ -252,7 +265,6 @@ public class ShoppingCenterGUI extends JFrame {
                 category,
                 product.getPrice(),
                 info,
-                product.getAvailableItems() //send for check
         };
     }
 
@@ -264,7 +276,11 @@ public class ShoppingCenterGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        ShoppingCenterGUI shoppingCenter = new ShoppingCenterGUI();
-        shoppingCenter.setVisible(true);
+       SwingUtilities.invokeLater(new Runnable() {
+           @Override
+           public void run() {
+               ShoppingCenterGUI shoppingCenterGUI=new ShoppingCenterGUI();
+           }
+       });
     }
 }
