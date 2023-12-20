@@ -6,7 +6,9 @@ import gui.def.CustomTableCellRenderer;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,11 +30,13 @@ public class ShoppingCenterGUI extends JFrame {
     private JLabel productDetail;
     private JButton addToCartBtn;
     private ArrayList<Product> products;
+    private ArrayList<Product> updatedProductsByCategory;
     private ShoppingCart shoppingCart;
 
     public ShoppingCenterGUI() {
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         products = shoppingManager.getProducts();
+        updatedProductsByCategory= (ArrayList<Product>) products.clone();
         shoppingCart=new ShoppingCart();
         initializeFrame();
         createUpperPanel();
@@ -93,7 +97,7 @@ public class ShoppingCenterGUI extends JFrame {
     private void createProductTable() {
         productTable = new JTable();
         // Assuming productTable is your JTable
-        productTable.setDefaultRenderer(Object.class, new CustomTableCellRenderer());
+        productTable.setDefaultRenderer(Object.class, new CustomTableCellRenderer(updatedProductsByCategory));
 
         productTableModel = new DefaultTableModel();
         productTable.setModel(productTableModel);
@@ -210,14 +214,18 @@ public class ShoppingCenterGUI extends JFrame {
 
     private void selectCategoryModel(String type) {
         ArrayList<Object[]> filteredProducts = new ArrayList<>();
+        updatedProductsByCategory.clear();
 
         for (Product product : products) {
             if (isProductOfType(type, product)) {
                 Object[] data = createProductData(product);
                 filteredProducts.add(data);
+                updatedProductsByCategory.add(product);
             }
         }
         updateTableModel(filteredProducts);
+
+
     }
 
     private boolean isProductOfType(String type, Product product) {
@@ -252,6 +260,7 @@ public class ShoppingCenterGUI extends JFrame {
         Object[][] newData = filteredProducts.toArray(new Object[0][0]);
         String[] columns = {"Product ID", "Name", "Category", "Price(£)", "Info"};
         productTableModel.setDataVector(newData, columns);
+        productTable.setDefaultRenderer(Object.class, new CustomTableCellRenderer(updatedProductsByCategory));
     }
 
     public static void main(String[] args) {
