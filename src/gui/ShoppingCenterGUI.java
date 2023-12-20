@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ShoppingCenterGUI extends JFrame {
     private JLabel categoryLabel;
@@ -22,21 +23,24 @@ public class ShoppingCenterGUI extends JFrame {
     private JButton shoppingCart;
     private JTable productTable;
     private DefaultTableModel productTableModel;
-
+    private JButton sortByProductId;
+    private JButton sortByName;
+    private JButton sortByPrice;
     private JLabel productTitle;
     private JLabel productDetail;
     private JButton addToCart;
     private ArrayList<Product> products;
 
     public ShoppingCenterGUI() {
-        WestminsterShoppingManager shoppingManager=new WestminsterShoppingManager();
-        products=shoppingManager.getProducts();
+        WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
+        products = shoppingManager.getProducts();
         initializeFrame();
         createUpperPanel();
         createProductTable();
         createLowerPanel();
         addListeners();
     }
+
     private void initializeFrame() {
         setTitle("Westminster Shopping Center");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,22 +49,44 @@ public class ShoppingCenterGUI extends JFrame {
     }
 
     private void createUpperPanel() {
-        JPanel upperPanel = new JPanel(new FlowLayout());
+        JPanel upperPanel = new JPanel(new BorderLayout());
+        upperPanel.setPreferredSize(new Dimension(100, 150));
 
-        //category label
+        // Center panel for other components
+        JPanel centerPanel = new JPanel(new FlowLayout());
+
+        // Category label
         categoryLabel = new JLabel("Select Product Category ");
         categoryLabel.setLabelFor(category);
 
-        //category JList
+        // Category JList
         String[] categories = {"All", "Electronics", "Clothing"};
         category = new JComboBox<>(categories);
         category.setSelectedIndex(0);
 
-        upperPanel.add(categoryLabel);
-        upperPanel.add(category);
+        sortByName = new JButton("Sort By Name");
+        sortByProductId = new JButton("Sort By ID");
+        sortByPrice=new JButton("Sort By Price");
+
+        // Add components to the center panel
+        centerPanel.add(categoryLabel);
+        centerPanel.add(category);
+        centerPanel.add(sortByProductId);
+        centerPanel.add(sortByName);
+        centerPanel.add(sortByPrice);
+
+        // Cart button aligned near the right page margin
+        shoppingCart = new JButton("Shopping Cart");
+        JPanel cartPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        cartPanel.add(shoppingCart);
+
+        // Add components to the upper panel
+        upperPanel.add(centerPanel, BorderLayout.CENTER);
+        upperPanel.add(cartPanel, BorderLayout.LINE_END);
 
         this.add(upperPanel, BorderLayout.PAGE_START);
     }
+
 
     private void createProductTable() {
         productTable = new JTable();
@@ -92,15 +118,19 @@ public class ShoppingCenterGUI extends JFrame {
         add(lowerPanel, BorderLayout.PAGE_END);
     }
 
+    String selectedOption = "All";
+
     private void addListeners() {
+
         category.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox<String> category = (JComboBox<String>) e.getSource();
-                String selectedOption = (String) category.getSelectedItem();
+                selectedOption = (String) category.getSelectedItem();
                 selectCategoryModel(selectedOption);
             }
         });
+
 
         productTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -110,10 +140,34 @@ public class ShoppingCenterGUI extends JFrame {
                     String productId = (String) productTable.getValueAt(selectedRow, 0);
                     for (Product product : products) {
                         if (product.getProductID().equals(productId)) {// Correct comparison
-                            productDetail.setText("<html>" + product.toString().replace("\n","<br/>") + "</html>");
+                            productDetail.setText("<html>" + product.toString().replace("\n", "<br/>") + "</html>");
                         }
                     }
                 }
+            }
+        });
+
+        sortByProductId.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Collections.sort(products);
+                selectCategoryModel(selectedOption);
+            }
+        });
+
+        sortByName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                products.sort(Product.compareByName);
+                selectCategoryModel(selectedOption);
+            }
+        });
+
+        sortByPrice.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                products.sort(Product.compareByPrice);
+                selectCategoryModel(selectedOption);
             }
         });
 
@@ -124,6 +178,7 @@ public class ShoppingCenterGUI extends JFrame {
             }
         });
     }
+
     private void selectCategoryModel(String type) {
         ArrayList<Object[]> filteredProducts = new ArrayList<>();
 
@@ -133,7 +188,6 @@ public class ShoppingCenterGUI extends JFrame {
                 filteredProducts.add(data);
             }
         }
-
         updateTableModel(filteredProducts);
     }
 
@@ -171,7 +225,7 @@ public class ShoppingCenterGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        ShoppingCenter shoppingCenter=new ShoppingCenter();
+        ShoppingCenterGUI shoppingCenter = new ShoppingCenterGUI();
         shoppingCenter.setVisible(true);
     }
 }

@@ -1,8 +1,9 @@
 package cli;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
-public abstract class Product implements Comparable<Product>, Serializable {
+public abstract class Product implements Comparable<Product>{
     private String productID;
     private String productName;
     private int availableItems;
@@ -60,4 +61,7 @@ public abstract class Product implements Comparable<Product>, Serializable {
     }
 
     public abstract String toCSV();
+
+    public static Comparator<Product> compareByName = Comparator.comparing(Product::getProductName);
+    public static Comparator<Product> compareByPrice = Comparator.comparingDouble(Product::getPrice);
 }
