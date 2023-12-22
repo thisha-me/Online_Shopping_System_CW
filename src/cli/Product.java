@@ -2,6 +2,7 @@ package cli;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Objects;
 
 public abstract class Product implements Comparable<Product>{
     private String productID;
@@ -51,8 +52,12 @@ public abstract class Product implements Comparable<Product>{
         this.price = price;
     }
 
-    public boolean equals(String check_productID) {
-        return productID.equals(check_productID);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(productID, product.productID);
     }
 
     @Override
