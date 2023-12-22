@@ -35,5 +35,19 @@ public class CartItem{
     public double getTotalPrice(){
         return product.getPrice()*quantity;
     }
+
+    public String getDetails(){
+        if(product instanceof Electronics){
+            return product.getProductID()+ "\n"+
+                    product.getProductName()+"\n"+
+                    ((Electronics) product).getBrand()+"\n"+
+                    ((Electronics) product).getWarrantyPeriod()+"months";
+        } else if (product instanceof Clothing) {
+            return product.getProductID()+ "\n"+
+                    product.getProductName()+"\n"+
+                    ((Clothing) product).getSize()+", "+ ((Clothing) product).getColor();
+        }
+        return null;
+    }
 }
 
