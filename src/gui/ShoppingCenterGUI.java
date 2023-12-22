@@ -1,7 +1,7 @@
 package gui;
 
 import cli.*;
-import gui.def.CustomTableCellRenderer;
+import gui.def.ColorChangeCellRender;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -102,7 +102,7 @@ public class ShoppingCenterGUI extends JFrame {
     private void createProductTable() {
         productTable = new JTable();
         // Assuming productTable is your JTable
-        productTable.setDefaultRenderer(Object.class, new CustomTableCellRenderer(updatedProductsByCategory));
+        productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));
 
         productTableModel = new DefaultTableModel();
         productTable.setModel(productTableModel);
@@ -153,7 +153,7 @@ public class ShoppingCenterGUI extends JFrame {
                 if (selectedRow != -1) {
                     String productId = (String) productTable.getValueAt(selectedRow, 0);
                     for (Product product : products) {
-                        if (product.equals(productId)) {// Correct comparison
+                        if (product.getProductID().equals(productId)) {// Correct comparison
                             selectedProduct=product;
                             productDetail.setText("<html>" + product.toString().replace("\n", "<br/>") + "</html>");
                         }
@@ -203,6 +203,7 @@ public class ShoppingCenterGUI extends JFrame {
                         " ",dialogButton);
                 if (dialogButton == JOptionPane.YES_OPTION){
                     shoppingCart.addProduct(selectedProduct);
+                    shoppingCartGUI.updateCartTable();
                     System.out.println(selectedProduct.getProductID()+" product added");
                 }
             }
@@ -272,7 +273,7 @@ public class ShoppingCenterGUI extends JFrame {
         Object[][] newData = filteredProducts.toArray(new Object[0][0]);
         String[] columns = {"Product ID", "Name", "Category", "Price(£)", "Info"};
         productTableModel.setDataVector(newData, columns);
-        productTable.setDefaultRenderer(Object.class, new CustomTableCellRenderer(updatedProductsByCategory));
+        productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));
     }
 
     public static void main(String[] args) {

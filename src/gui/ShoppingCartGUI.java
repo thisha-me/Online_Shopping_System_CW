@@ -1,7 +1,9 @@
 package gui;
 
+import cli.CartItem;
 import cli.Product;
 import cli.ShoppingCart;
+import gui.def.CenterCellRender;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -12,11 +14,14 @@ public class ShoppingCartGUI extends JFrame {
     JTable cartTable;
     JLabel total;
     JLabel summary;
+    DefaultTableModel tableModel;
 
 
     public ShoppingCartGUI(ShoppingCart shoppingCart){
         this.shoppingCart=shoppingCart;
+        System.out.println(this.shoppingCart);
         initializeFrame();
+        createTable();
     }
     private void initializeFrame() {
         setTitle("Shopping Cart");
@@ -26,14 +31,24 @@ public class ShoppingCartGUI extends JFrame {
     }
 
     private void createTable(){
-        DefaultTableModel tableModel = new DefaultTableModel(
-                new Object[]{"Product ID", "Name", "Price", "Availability"}, 0);
+        tableModel = new DefaultTableModel(
+                new Object[]{"Product ID", "Name", "Price"}, 0);
         cartTable = new JTable(tableModel);
+        cartTable.setRowHeight(75);
+        cartTable.setDefaultRenderer(Object.class, new CenterCellRender());
 
-        for(Product product:shoppingCart.getProducts()){
-            tableModel.addRow(new Object[]{product.getProductID()+product,product.getPrice()});
-        }
+        JScrollPane tablePane=new JScrollPane(cartTable);
+        this.add(tablePane);
     }
 
+    public void updateCartTable() {
+        tableModel.setRowCount(0); // Clear the table
+        for (CartItem item : shoppingCart.getItems()) {
+            tableModel.addRow(new Object[]{
+                    "<html>"+item.getDetails().replace("\n","<br>")+"</html>",
+                    item.getQuantity(),
+                    item.getTotalPrice()});
+        }
+    }
 
 }
