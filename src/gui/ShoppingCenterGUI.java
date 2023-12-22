@@ -1,6 +1,7 @@
 package gui;
 
 import cli.*;
+import gui.def.CenterCellRender;
 import gui.def.ColorChangeCellRender;
 
 import javax.swing.*;
@@ -101,8 +102,7 @@ public class ShoppingCenterGUI extends JFrame {
 
     private void createProductTable() {
         productTable = new JTable();
-        // Assuming productTable is your JTable
-        productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));
+        productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));// change cell color
 
         productTableModel = new DefaultTableModel();
         productTable.setModel(productTableModel);
@@ -202,7 +202,12 @@ public class ShoppingCenterGUI extends JFrame {
                                 "<html>",
                         " ",dialogButton);
                 if (dialogButton == JOptionPane.YES_OPTION){
-                    shoppingCart.addProduct(selectedProduct);
+                    try {
+                        shoppingCart.addProduct(selectedProduct);
+                    }catch (RuntimeException error){
+                        JOptionPane.showMessageDialog(new JFrame(), error.getMessage(),"",JOptionPane.WARNING_MESSAGE);
+                    }
+
                     shoppingCartGUI.updateCartTable();
                     System.out.println(selectedProduct.getProductID()+" product added");
                 }
@@ -273,7 +278,6 @@ public class ShoppingCenterGUI extends JFrame {
         Object[][] newData = filteredProducts.toArray(new Object[0][0]);
         String[] columns = {"Product ID", "Name", "Category", "Price(£)", "Info"};
         productTableModel.setDataVector(newData, columns);
-        productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));
     }
 
     public static void main(String[] args) {

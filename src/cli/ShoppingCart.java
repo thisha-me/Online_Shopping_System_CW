@@ -6,21 +6,33 @@ public class ShoppingCart {
     private ArrayList<CartItem> items;
 
     public ShoppingCart() {
-        items=new ArrayList<>();
+        items = new ArrayList<>();
     }
 
-    public void addProduct(Product product){
-        for (CartItem item : items) {
-            if (item.getProduct().equals(product)) {
-                item.incrementQuantity();
-                return;
+    public void addProduct(Product product) {
+        int availableQuantity = product.getAvailableItems();
+
+        CartItem existingItem = findCartItemByProduct(product);
+
+        if (existingItem != null) {
+            int currentQuantity = existingItem.getQuantity();
+            if (currentQuantity < availableQuantity) {
+                existingItem.incrementQuantity();
+            }else {
+                throw new RuntimeException("The product is out of stock or the limit has been reached.");
             }
+            return;
         }
-        // If product not found in cart, add as a new item
-        items.add(new CartItem(product));
+        if (availableQuantity > 0) {
+            items.add(new CartItem(product));
+            return;
+        }
+        throw new RuntimeException("The product is out of stock.");
+
+
     }
 
-    public void removeProduct(Product product){
+    public void removeProduct(Product product) {
         items.removeIf(item -> item.getProduct().equals(product));
     }
 
@@ -30,6 +42,15 @@ public class ShoppingCart {
             totalCost += item.getTotalPrice();
         }
         return totalCost;
+    }
+
+    private CartItem findCartItemByProduct(Product product) {
+        for (CartItem item : items) {
+            if (item.getProduct().equals(product)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public ArrayList<CartItem> getItems() {
