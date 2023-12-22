@@ -108,7 +108,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
     private boolean isExistProductID(String productID){
         for(Product product:products){
-            return product.equals(productID);
+            return product.getProductID().equals(productID);
         }
         return false;
     }
@@ -127,7 +127,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
         Product deletedProduct = null;
         for (Product product : products) {
-            if (product.equals(deleteProductId)) {
+            if (product.getProductID().equals(deleteProductId)) {
                 deletedProduct = product;
                 System.out.println("Product Delete ");
                 break;
