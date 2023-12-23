@@ -4,6 +4,7 @@ import cli.CartItem;
 import cli.Product;
 import cli.ShoppingCart;
 import gui.def.CenterCellRender;
+import gui.def.NoEditableTableModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -31,7 +32,7 @@ public class ShoppingCartGUI extends JFrame {
     }
 
     private void createTable(){
-        tableModel = new DefaultTableModel(
+        tableModel = new NoEditableTableModel(
                 new Object[]{"Product ID", "Name", "Price"}, 0);
         cartTable = new JTable(tableModel);
         cartTable.setRowHeight(75);

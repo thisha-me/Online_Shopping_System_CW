@@ -3,6 +3,7 @@ package gui;
 import cli.*;
 import gui.def.CenterCellRender;
 import gui.def.ColorChangeCellRender;
+import gui.def.NoEditableTableModel;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -104,7 +105,7 @@ public class ShoppingCenterGUI extends JFrame {
         productTable = new JTable();
         productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));// change cell color
 
-        productTableModel = new DefaultTableModel();
+        productTableModel = new NoEditableTableModel();
         productTable.setModel(productTableModel);
         selectCategoryModel("All");
 
