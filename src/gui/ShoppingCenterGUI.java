@@ -129,7 +129,7 @@ public class ShoppingCenterGUI extends JFrame {
         lowerPanel.add(productDetail);
         lowerPanel.add(buttonPanel);
 
-        add(lowerPanel, BorderLayout.PAGE_END);
+        this.add(lowerPanel, BorderLayout.PAGE_END);
     }
 
     String selectedOption = "All";
@@ -285,7 +285,7 @@ public class ShoppingCenterGUI extends JFrame {
        SwingUtilities.invokeLater(new Runnable() {
            @Override
            public void run() {
-               ShoppingCenterGUI shoppingCenterGUI=new ShoppingCenterGUI();
+               new ShoppingCenterGUI();
            }
        });
     }
