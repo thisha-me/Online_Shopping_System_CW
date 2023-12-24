@@ -56,7 +56,6 @@ public class ShoppingCenterGUI extends JFrame {
         setSize(1200, 1024);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
-        this.setVisible(true);
     }
 
     private void createUpperPanel() {
@@ -282,11 +281,6 @@ public class ShoppingCenterGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-       SwingUtilities.invokeLater(new Runnable() {
-           @Override
-           public void run() {
-               new ShoppingCenterGUI();
-           }
-       });
+        new ShoppingCenterGUI().setVisible(true);
     }
 }

@@ -20,7 +20,6 @@ public class ShoppingCartGUI extends JFrame {
 
     public ShoppingCartGUI(ShoppingCart shoppingCart){
         this.shoppingCart=shoppingCart;
-        System.out.println(this.shoppingCart);
         initializeFrame();
         createTable();
     }
