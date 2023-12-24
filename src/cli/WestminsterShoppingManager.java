@@ -220,14 +220,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
             }
 
             // if delete products delete form the db
-            for (Product product : deletedProducts) {
-                sql = "DELETE FROM ";
-                sql += product instanceof Electronics ? "Electronics WHERE productId=?" : "Clothing WHERE productId=?";
-                statement = connection.prepareStatement(sql);
-                statement.setString(1, product.getProductID());
-                statement.executeUpdate();
-            }
-            deletedProducts.clear();
+            deleteProductsDB( connection);
 
             System.out.println("Data save to database");
         } catch (SQLException | ClassNotFoundException e) {
@@ -277,6 +270,18 @@ public class WestminsterShoppingManager implements ShoppingManager {
             String color = resultSet.getString("color");
             products.add(new Clothing(productId, productName, availableItems, price, size, color));
         }
+    }
+
+    private void deleteProductsDB(Connection connection) throws SQLException{
+        String sql;
+        for (Product product : deletedProducts) {
+            sql = "DELETE FROM ";
+            sql += product instanceof Electronics ? "Electronics WHERE productId=?" : "Clothing WHERE productId=?";
+            PreparedStatement statement=connection.prepareStatement(sql);
+            statement.setString(1, product.getProductID());
+            statement.executeUpdate();
+        }
+        deletedProducts.clear();
     }
 
 }
