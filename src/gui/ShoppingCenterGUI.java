@@ -36,7 +36,8 @@ public class ShoppingCenterGUI extends JFrame {
     private User user;
     private JLabel welcomeMsg;
 
-    public ShoppingCenterGUI() {
+    public ShoppingCenterGUI(User user) {
+        this.user=user;
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         products = shoppingManager.getProducts();
         updatedProductsByCategory = (ArrayList<Product>) products.clone();
@@ -210,6 +211,7 @@ public class ShoppingCenterGUI extends JFrame {
                 }
 
                 shoppingCartGUI.updateCartTable();
+                shoppingCartGUI.updateSummary();
                 System.out.println(selectedProduct.getProductID() + " product added");
             }
         });
@@ -276,6 +278,8 @@ public class ShoppingCenterGUI extends JFrame {
 
     public void setUser(User user) {
         this.user = user;
+        shoppingCartGUI.setUser(user);
+        System.out.println(user.getUserName()+"  "+user.isFirstPurchaseCompleted());
         welcomeMsg.setText("Welcome " + user.getUserName());
     }
 }
