@@ -49,7 +49,7 @@ public class LoginGUI extends JFrame {
         add(panel, BorderLayout.CENTER);
 
         registerGUI=new RegisterGUI(this);
-        shoppingCenterGUI=new ShoppingCenterGUI();
+        shoppingCenterGUI=new ShoppingCenterGUI(user);
         actions();
 
     }
