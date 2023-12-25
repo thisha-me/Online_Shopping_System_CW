@@ -1,8 +1,14 @@
 package cli;
 
 public class User {
-    private String userName;
+    private final String userName;
     private String password;
+    private boolean firstPurchaseCompleted;
+
+    public User(String userName, boolean firstPurchaseCompleted) {
+        this.userName = userName;
+        this.firstPurchaseCompleted = firstPurchaseCompleted;
+    }
 
     public User(String userName, String password) {
         this.userName = userName;
@@ -13,15 +19,15 @@ public class User {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public boolean isFirstPurchaseCompleted() {
+        return firstPurchaseCompleted;
+    }
+
+    public void setFirstPurchaseCompleted(boolean firstPurchaseCompleted) {
+        this.firstPurchaseCompleted = firstPurchaseCompleted;
     }
 
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
