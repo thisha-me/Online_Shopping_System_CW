@@ -1,18 +1,16 @@
 package gui;
 
 import cli.*;
-import gui.def.CenterCellRender;
 import gui.def.ColorChangeCellRender;
 import gui.def.NoEditableTableModel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,13 +33,15 @@ public class ShoppingCenterGUI extends JFrame {
     private ArrayList<Product> updatedProductsByCategory;
     private ShoppingCart shoppingCart;
     private ShoppingCartGUI shoppingCartGUI;
+    private User user;
+    private JLabel welcomeMsg;
 
     public ShoppingCenterGUI() {
         WestminsterShoppingManager shoppingManager = new WestminsterShoppingManager();
         products = shoppingManager.getProducts();
-        updatedProductsByCategory= (ArrayList<Product>) products.clone();
-        shoppingCart=new ShoppingCart();
-        shoppingCartGUI=new ShoppingCartGUI(shoppingCart);
+        updatedProductsByCategory = (ArrayList<Product>) products.clone();
+        shoppingCart = new ShoppingCart();
+        shoppingCartGUI = new ShoppingCartGUI(shoppingCart, user);
         initializeFrame();
         createUpperPanel();
         createProductTable();
@@ -56,6 +56,7 @@ public class ShoppingCenterGUI extends JFrame {
         setSize(1200, 1024);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
     }
 
     private void createUpperPanel() {
@@ -64,6 +65,10 @@ public class ShoppingCenterGUI extends JFrame {
 
         // Center panel for other components
         JPanel centerPanel = new JPanel(new FlowLayout());
+
+        welcomeMsg = new JLabel();
+        JPanel topPanel = new JPanel();
+        topPanel.add(welcomeMsg);
 
         // Category label
         categoryLabel = new JLabel("Select Product Category ");
@@ -74,10 +79,10 @@ public class ShoppingCenterGUI extends JFrame {
         category = new JComboBox<>(categories);
         category.setSelectedIndex(0);
 
-        JPanel sortPanel=new JPanel(new FlowLayout());
+        JPanel sortPanel = new JPanel(new FlowLayout());
         sortByNameBtn = new JButton("Sort By Name");
         sortByProductIdBtn = new JButton("Sort By ID");
-        sortByPriceBtn=new JButton("Sort By Price");
+        sortByPriceBtn = new JButton("Sort By Price");
         sortPanel.add(sortByProductIdBtn);
         sortPanel.add(sortByNameBtn);
         sortPanel.add(sortByPriceBtn);
@@ -92,9 +97,10 @@ public class ShoppingCenterGUI extends JFrame {
         cartPanel.add(shoppingCartBtn);
 
         // Add components to the upper panel
+        upperPanel.add(topPanel, BorderLayout.PAGE_START);
         upperPanel.add(centerPanel, BorderLayout.CENTER);
         upperPanel.add(cartPanel, BorderLayout.LINE_END);
-        upperPanel.add(sortPanel,BorderLayout.PAGE_END);
+        upperPanel.add(sortPanel, BorderLayout.PAGE_END);
 
         this.add(upperPanel, BorderLayout.PAGE_START);
     }
@@ -132,7 +138,7 @@ public class ShoppingCenterGUI extends JFrame {
     }
 
     String selectedOption = "All";
-    Product selectedProduct=null;
+    Product selectedProduct = null;
 
     private void addListeners() {
 
@@ -154,7 +160,7 @@ public class ShoppingCenterGUI extends JFrame {
                     String productId = (String) productTable.getValueAt(selectedRow, 0);
                     for (Product product : products) {
                         if (product.getProductID().equals(productId)) {// Correct comparison
-                            selectedProduct=product;
+                            selectedProduct = product;
                             productDetail.setText("<html>" + product.toString().replace("\n", "<br/>") + "</html>");
                         }
                     }
@@ -178,39 +184,33 @@ public class ShoppingCenterGUI extends JFrame {
             }
         });
 
-        sortByPriceBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                products.sort(Product.compareByPrice);
-                selectCategoryModel(selectedOption);
-            }
+        sortByPriceBtn.addActionListener(e -> {
+            products.sort(Product.compareByPrice);
+            selectCategoryModel(selectedOption);
         });
 
-        addToCartBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(selectedProduct==null){
-                    JOptionPane.showMessageDialog(new JFrame(), "Before add to cart you should select the product", "Dialog",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
+        addToCartBtn.addActionListener(e -> {
+            if (selectedProduct == null) {
+                JOptionPane.showMessageDialog(new JFrame(), "Before add to cart you should select the product", "Dialog",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            dialogButton = JOptionPane.showConfirmDialog(null,
+                    "<html>Do you want to add this product to cart?<br>" +
+                            selectedProduct.toString().replace("\n", "<br>") +
+                            "<html>",
+                    " ", dialogButton);
+            if (dialogButton == JOptionPane.YES_OPTION) {
+                try {
+                    shoppingCart.addProduct(selectedProduct);
+                } catch (RuntimeException error) {
+                    JOptionPane.showMessageDialog(new JFrame(), error.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                 }
 
-                int dialogButton = JOptionPane.YES_NO_OPTION;
-                dialogButton=JOptionPane.showConfirmDialog (null,
-                        "<html>Do you want to add this product to cart?<br>" +
-                                selectedProduct.toString().replace("\n","<br>") +
-                                "<html>",
-                        " ",dialogButton);
-                if (dialogButton == JOptionPane.YES_OPTION){
-                    try {
-                        shoppingCart.addProduct(selectedProduct);
-                    }catch (RuntimeException error){
-                        JOptionPane.showMessageDialog(new JFrame(), error.getMessage(),"",JOptionPane.WARNING_MESSAGE);
-                    }
-
-                    shoppingCartGUI.updateCartTable();
-                    System.out.println(selectedProduct.getProductID()+" product added");
-                }
+                shoppingCartGUI.updateCartTable();
+                System.out.println(selectedProduct.getProductID() + " product added");
             }
         });
 
@@ -218,17 +218,11 @@ public class ShoppingCenterGUI extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 productDetail.setText("<html>" + "<br/>".repeat(6) + "</html>"); // Clear the product details
-                selectedProduct=null;
+                selectedProduct = null;
             }
         });
 
-        shoppingCartBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                shoppingCartGUI.setVisible(!shoppingCartGUI.isVisible());
-
-            }
-        });
+        shoppingCartBtn.addActionListener(e -> shoppingCartGUI.setVisible(!shoppingCartGUI.isVisible()));
     }
 
     private void selectCategoryModel(String type) {
@@ -280,7 +274,8 @@ public class ShoppingCenterGUI extends JFrame {
         productTableModel.setDataVector(newData, columns);
     }
 
-    public static void main(String[] args) {
-        new ShoppingCenterGUI().setVisible(true);
+    public void setUser(User user) {
+        this.user = user;
+        welcomeMsg.setText("Welcome " + user.getUserName());
     }
 }

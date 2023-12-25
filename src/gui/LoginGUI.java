@@ -1,13 +1,11 @@
 package gui;
 
+import cli.User;
 import utils.DBConnection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginGUI extends JFrame {
     private JButton registerButton;
@@ -16,18 +14,13 @@ public class LoginGUI extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
 
-    private boolean isLoggedIn;
+    private ShoppingCenterGUI shoppingCenterGUI;
+    private RegisterGUI registerGUI;
 
-    public JButton getRegisterButton() {
-        return registerButton;
-    }
-
-    public JButton getLoginButton() {
-        return loginButton;
-    }
+    private User user;
 
     public LoginGUI() {
-        setTitle("Login Panel");
+        setTitle("User Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 200);
         setLayout(new BorderLayout());
@@ -55,17 +48,43 @@ public class LoginGUI extends JFrame {
 
         add(panel, BorderLayout.CENTER);
 
+        registerGUI=new RegisterGUI(this);
+        shoppingCenterGUI=new ShoppingCenterGUI();
+        actions();
+
     }
 
-    protected void logging() {
-        isLoggedIn=false;
+    private void actions(){
+        loginButton.addActionListener(e->{
+            if(logging()){
+                this.setVisible(false);
+                shoppingCenterGUI.setVisible(true);
+                shoppingCenterGUI.setUser(user);
+
+            }
+        });
+
+        registerButton.addActionListener(e -> {
+            this.setVisible(false);
+            registerGUI.setVisible(true);
+        });
+    }
+
+    private boolean logging() {
         String username = usernameField.getText().strip();
         char[] passwordChars = passwordField.getPassword();
 
-        String password = new String(passwordChars);
+        String password = new String(passwordChars).strip();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    "All fields are required. Please fill them.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
 
         try (Connection connection = DBConnection.getConnection()) {
-            String sql = "SELECT * FROM users WHERE username=? and password=?";
+            String sql = "SELECT * FROM users WHERE username=? and password=? LIMIT 1";
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setEscapeProcessing(true); //avoid sql injection
@@ -76,18 +95,18 @@ public class LoginGUI extends JFrame {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
+                String resUsername=resultSet.getString("username");
+                boolean resFirstPurchaseCompleted=resultSet.getInt("firstPurchaseCompleted")==1;
+                user=new User(resUsername,resFirstPurchaseCompleted);
                 System.out.println("successfully login");
-                isLoggedIn=true;
+                return true;
             } else {
                 passwordField.setText("");
-                JOptionPane.showMessageDialog(null, "Login fail!");
+                JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password!","error",JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException | ClassNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
-    }
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
+        return false;
     }
 }

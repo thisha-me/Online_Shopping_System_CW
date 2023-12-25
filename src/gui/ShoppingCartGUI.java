@@ -3,6 +3,7 @@ package gui;
 import cli.CartItem;
 import cli.Product;
 import cli.ShoppingCart;
+import cli.User;
 import gui.def.CenterCellRender;
 import gui.def.NoEditableTableModel;
 
@@ -11,15 +12,17 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class ShoppingCartGUI extends JFrame {
-    ShoppingCart shoppingCart;
-    JTable cartTable;
-    JLabel total;
-    JLabel summary;
-    DefaultTableModel tableModel;
+    private ShoppingCart shoppingCart;
+    private JTable cartTable;
+    private JLabel total;
+    private JLabel summary;
+    private DefaultTableModel tableModel;
+    private User user;
 
 
-    public ShoppingCartGUI(ShoppingCart shoppingCart){
+    public ShoppingCartGUI(ShoppingCart shoppingCart, User user){
         this.shoppingCart=shoppingCart;
+        this.user=user;
         initializeFrame();
         createTable();
     }
@@ -28,6 +31,7 @@ public class ShoppingCartGUI extends JFrame {
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(1200, 1024);
         setLayout(new BorderLayout());
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
     }
 
     private void createTable(){
@@ -45,7 +49,7 @@ public class ShoppingCartGUI extends JFrame {
         tableModel.setRowCount(0); // Clear the table
         for (CartItem item : shoppingCart.getItems()) {
             tableModel.addRow(new Object[]{
-                    "<html>"+item.getDetails().replace("\n","<br>")+"</html>",
+                    item.getDetails(),
                     item.getQuantity(),
                     item.getTotalPrice()});
         }
