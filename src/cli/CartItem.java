@@ -38,14 +38,14 @@ public class CartItem{
 
     public String getDetails(){
         if(product instanceof Electronics){
-            return product.getProductID()+ "\n"+
-                    product.getProductName()+"\n"+
-                    ((Electronics) product).getBrand()+"\n"+
-                    ((Electronics) product).getWarrantyPeriod()+"months";
+            return "<html>"+product.getProductID()+ "<br>"+
+                    product.getProductName()+"<br>"+
+                    ((Electronics) product).getBrand()+"<br>"+
+                    ((Electronics) product).getWarrantyPeriod()+"months</html>";
         } else if (product instanceof Clothing) {
-            return product.getProductID()+ "\n"+
-                    product.getProductName()+"\n"+
-                    ((Clothing) product).getSize()+", "+ ((Clothing) product).getColor();
+            return "<html>"+product.getProductID()+ "<br>"+
+                    product.getProductName()+"<br>"+
+                    ((Clothing) product).getSize()+", "+ ((Clothing) product).getColor()+"</html>";
         }
         return null;
     }
