@@ -60,4 +60,17 @@ public class ShoppingCart {
     public void setItems(ArrayList<CartItem> items) {
         this.items = items;
     }
+
+    public int[] categoryCount(){
+        int[] count=new int[2];
+        for(CartItem item: getItems()){
+            if(item.getProduct() instanceof Electronics){
+                count[0]+=item.getQuantity();
+            }
+            else if(item.getProduct() instanceof Clothing){
+                count[1]+=item.getQuantity();
+            }
+        }
+        return count;
+    }
 }
