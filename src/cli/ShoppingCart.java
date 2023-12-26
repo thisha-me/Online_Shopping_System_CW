@@ -73,4 +73,8 @@ public class ShoppingCart {
         }
         return count;
     }
+
+    public void clearCart(){
+        items.clear();
+    }
 }
