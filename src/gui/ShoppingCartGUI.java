@@ -7,10 +7,11 @@ import utils.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -165,6 +166,7 @@ public class ShoppingCartGUI extends JFrame {
                     shoppingCart.removeProduct(removeItem.getProduct());
                     updateCartTable();
                     updateSummary();
+                    shoppingCart.updateCartToDB(user);
                 }
             }
         });
@@ -192,6 +194,7 @@ public class ShoppingCartGUI extends JFrame {
                 updateCartTable();
                 updateSummary();
                 shoppingCenterGUI.updateProductTable();
+                shoppingCart.updateCartToDB(user);
             }
         });
     }
@@ -240,5 +243,9 @@ public class ShoppingCartGUI extends JFrame {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 }

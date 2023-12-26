@@ -1,10 +1,14 @@
 package gui;
 
+import cli.ShoppingCart;
 import cli.User;
 import utils.DBConnection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 
 public class LoginGUI extends JFrame {
@@ -18,6 +22,7 @@ public class LoginGUI extends JFrame {
     private RegisterGUI registerGUI;
 
     private User user;
+    ShoppingCart shoppingCart;
 
     public LoginGUI() {
         setTitle("User Login");
@@ -60,6 +65,7 @@ public class LoginGUI extends JFrame {
                 this.setVisible(false);
                 shoppingCenterGUI.setVisible(true);
                 shoppingCenterGUI.setUser(user);
+                shoppingCenterGUI.setShoppingCart(shoppingCart);
 
             }
         });
@@ -98,13 +104,26 @@ public class LoginGUI extends JFrame {
                 String resUsername=resultSet.getString("username");
                 boolean resFirstPurchaseCompleted=resultSet.getInt("firstPurchaseCompleted")==1;
                 user=new User(resUsername,resFirstPurchaseCompleted);
+                byte[] serializedObject = resultSet.getBytes("shoppingCart");
+
+                if (serializedObject != null) {
+                    // Deserialize the object
+                    ByteArrayInputStream bis = new ByteArrayInputStream(serializedObject);
+                    ObjectInputStream ois = new ObjectInputStream(bis);
+                    shoppingCart = (ShoppingCart) ois.readObject();
+                    System.out.println("Object load succesfully");
+
+                } else {
+                    shoppingCart=new ShoppingCart();
+                    System.out.println("object not saves");
+                }
                 System.out.println("successfully login");
                 return true;
             } else {
                 passwordField.setText("");
                 JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password!","error",JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException | ClassNotFoundException | IOException ex) {
             System.out.println(ex.getMessage());
         }
         return false;

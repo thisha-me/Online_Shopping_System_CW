@@ -1,8 +1,17 @@
 package cli;
 
+import utils.DBConnection;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ShoppingCart {
+public class ShoppingCart implements Serializable {
     private ArrayList<CartItem> items;
 
     public ShoppingCart() {
@@ -18,7 +27,7 @@ public class ShoppingCart {
             int currentQuantity = existingItem.getQuantity();
             if (currentQuantity < availableQuantity) {
                 existingItem.incrementQuantity();
-            }else {
+            } else {
                 throw new RuntimeException("The product is out of stock or the limit has been reached.");
             }
             return;
@@ -61,20 +70,42 @@ public class ShoppingCart {
         this.items = items;
     }
 
-    public int[] categoryCount(){
-        int[] count=new int[2];
-        for(CartItem item: getItems()){
-            if(item.getProduct() instanceof Electronics){
-                count[0]+=item.getQuantity();
-            }
-            else if(item.getProduct() instanceof Clothing){
-                count[1]+=item.getQuantity();
+    public int[] categoryCount() {
+        int[] count = new int[2];
+        for (CartItem item : getItems()) {
+            if (item.getProduct() instanceof Electronics) {
+                count[0] += item.getQuantity();
+            } else if (item.getProduct() instanceof Clothing) {
+                count[1] += item.getQuantity();
             }
         }
         return count;
     }
 
-    public void clearCart(){
+    public void clearCart() {
         items.clear();
+    }
+
+    public void updateCartToDB(User user){
+        try(Connection connection= DBConnection.getConnection()){
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+            byte[] serializedCartObject = bos.toByteArray();
+
+            String sql = "UPDATE users SET shoppingCart=? WHERE username=?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setBytes(1, serializedCartObject);
+            statement.setString(2,user.getUserName());
+
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("ShoppingCart Object serialized and saved to the database!");
+            }
+
+        }catch (SQLException | ClassNotFoundException | IOException e){
+            e.printStackTrace();
+        }
     }
 }

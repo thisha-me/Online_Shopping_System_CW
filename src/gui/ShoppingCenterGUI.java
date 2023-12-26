@@ -212,6 +212,7 @@ public class ShoppingCenterGUI extends JFrame {
                 shoppingCartGUI.updateCartTable();
                 shoppingCartGUI.updateSummary();
                 System.out.println(selectedProduct.getProductID() + " product added");
+                shoppingCart.updateCartToDB(user);
             }
         });
 
@@ -278,7 +279,6 @@ public class ShoppingCenterGUI extends JFrame {
     public void setUser(User user) {
         this.user = user;
         shoppingCartGUI.setUser(user);
-        System.out.println(user.getUserName()+"  "+user.isFirstPurchaseCompleted());
         welcomeMsg.setText("Welcome " + user.getUserName());
     }
 
@@ -290,4 +290,11 @@ public class ShoppingCenterGUI extends JFrame {
         selectCategoryModel(selectedOption);
     }
 
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+        shoppingCartGUI.setShoppingCart(shoppingCart);
+        shoppingCartGUI.updateCartTable();
+        shoppingCartGUI.updateSummary();
+
+    }
 }

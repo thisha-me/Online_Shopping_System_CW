@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 
-public abstract class Product implements Comparable<Product>{
+public abstract class Product implements Comparable<Product>, Serializable{
     private String productID;
     private String productName;
     private int availableItems;
