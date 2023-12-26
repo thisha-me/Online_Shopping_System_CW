@@ -40,11 +40,6 @@ public class Clothing extends Product {
                 "\nItem Available: " + getAvailableItems();
     }
 
-    @Override
-    public String toCSV() {
-        return "Clothing," + getProductID() + "," + getProductName() + "," +
-                getAvailableItems() + "," + getPrice() + "," + getSize() + "," + getColor()+"\n";
-    }
 
 
     public static Clothing fromCSV(String csv) {

@@ -65,7 +65,15 @@ public abstract class Product implements Comparable<Product>{
         return productID.compareTo(o.getProductID());
     }
 
-    public abstract String toCSV();
+    public void updateProductAvailability(int purchasedQuantity) {
+        if (availableItems >= purchasedQuantity) {
+            availableItems -= purchasedQuantity;
+            System.out.println("Product availability updated. Available quantity: " + availableItems);
+        } else {
+            System.out.println("Insufficient quantity available!");
+            // Handle the situation where the purchased quantity exceeds available quantity
+        }
+    }
 
     public static Comparator<Product> compareByName = Comparator.comparing(Product::getProductName);
     public static Comparator<Product> compareByPrice = Comparator.comparingDouble(Product::getPrice);

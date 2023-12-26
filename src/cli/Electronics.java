@@ -40,11 +40,6 @@ public class Electronics extends Product{
                 "\nItem Available : "+getAvailableItems();
     }
 
-    @Override
-    public String toCSV() {
-        return "Electronics," + getProductID() + "," + getProductName() + "," +
-                getAvailableItems() + "," + getPrice() + "," + getBrand() + "," + getWarrantyPeriod()+"\n";
-    }
 
     public static Product fromCSV(String csv) {
         String[] data = csv.split(",");
