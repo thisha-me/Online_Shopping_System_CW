@@ -5,7 +5,6 @@ import gui.def.ColorChangeCellRender;
 import gui.def.NoEditableTableModel;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -42,7 +41,7 @@ public class ShoppingCenterGUI extends JFrame {
         products = shoppingManager.getProducts();
         updatedProductsByCategory = (ArrayList<Product>) products.clone();
         shoppingCart = new ShoppingCart();
-        shoppingCartGUI = new ShoppingCartGUI(shoppingCart, user);
+        shoppingCartGUI = new ShoppingCartGUI(shoppingCart, user,this);
         initializeFrame();
         createUpperPanel();
         createProductTable();
@@ -282,4 +281,13 @@ public class ShoppingCenterGUI extends JFrame {
         System.out.println(user.getUserName()+"  "+user.isFirstPurchaseCompleted());
         welcomeMsg.setText("Welcome " + user.getUserName());
     }
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
+    public void updateProductTable() {
+        selectCategoryModel(selectedOption);
+    }
+
 }

@@ -1,17 +1,21 @@
 package gui;
 
-import cli.CartItem;
-import cli.Product;
-import cli.ShoppingCart;
-import cli.User;
+import cli.*;
 import gui.def.CenterCellRender;
 import gui.def.NoEditableTableModel;
+import utils.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class ShoppingCartGUI extends JFrame {
     private ShoppingCart shoppingCart;
@@ -20,16 +24,23 @@ public class ShoppingCartGUI extends JFrame {
     private User user;
 
     private JLabel totalLabel,firstPurchaseLabel,threeItemSameCategoryLabel,finalTotalLabel;
+    private JButton payBtn;
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
+    ShoppingCenterGUI shoppingCenterGUI;
+    ArrayList<Product> products;
 
-    public ShoppingCartGUI(ShoppingCart shoppingCart, User user){
+    public ShoppingCartGUI(ShoppingCart shoppingCart, User user, ShoppingCenterGUI shoppingCenterGUI){
         this.shoppingCart=shoppingCart;
         this.user = user != null ? user : new User("", false);
+        this.shoppingCenterGUI=shoppingCenterGUI;
+        this.products=shoppingCenterGUI.getProducts();
+
         initializeFrame();
         createTable();
         createDiscount();
+        actions();
     }
     private void initializeFrame() {
         setTitle("Shopping Cart");
@@ -67,9 +78,9 @@ public class ShoppingCartGUI extends JFrame {
         finalTotalLabel=new JLabel();
 
         Font labelFont = totalLabel.getFont();
-        totalLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f).deriveFont(Font.BOLD));
-        firstPurchaseLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f).deriveFont(Font.BOLD));
-        threeItemSameCategoryLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f).deriveFont(Font.BOLD));
+        totalLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f));
+        firstPurchaseLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f));
+        threeItemSameCategoryLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f));
         finalTotalLabel.setFont(labelFont.deriveFont(labelFont.getSize() + 5f).deriveFont(Font.BOLD));
 
         JPanel pricePanel=new JPanel();
@@ -92,6 +103,14 @@ public class ShoppingCartGUI extends JFrame {
         finalTotalPanel.add(finalTotalLabel);
         pricePanel.add(finalTotalPanel);
 
+        payBtn=new JButton("Pay");
+        payBtn.setPreferredSize(new Dimension(90,60));
+        payBtn.setFont(labelFont.deriveFont(labelFont.getSize() + 3f));
+        JPanel payBtnPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+        payBtnPanel.add(payBtn);
+        pricePanel.add(payBtnPanel);
+
+
         this.add(pricePanel,BorderLayout.AFTER_LAST_LINE);
 
     }
@@ -103,6 +122,8 @@ public class ShoppingCartGUI extends JFrame {
 
         if(!user.isFirstPurchaseCompleted()){
             firstPurchaseLabel.setText("First Purchase Discount (10%) \t\t\t\t"+firstPurchaseDiscount());
+        }else {
+            firstPurchaseLabel.setText("");
         }
     }
 
@@ -122,10 +143,102 @@ public class ShoppingCartGUI extends JFrame {
     }
 
     private double finalTotal(){
-        return shoppingCart.calculateTotalCost()+Double.parseDouble(firstPurchaseDiscount())+Double.parseDouble(threeItemSameCategoryDiscount());
+        return Double.parseDouble(df.format(shoppingCart.calculateTotalCost()))+Double.parseDouble(firstPurchaseDiscount())+Double.parseDouble(threeItemSameCategoryDiscount());
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    private void actions(){
+        cartTable.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = cartTable.getSelectedRow();
+            System.out.println("Select");
+            if(selectedRow!=-1){
+                CartItem removeItem=shoppingCart.getItems().get(selectedRow);
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                dialogButton = JOptionPane.showConfirmDialog(null,
+                                "<html>Do you want to remove this item?<br></html>"+removeItem.getDetails(),
+                        " ", dialogButton);
+
+                if (dialogButton == JOptionPane.YES_OPTION) {
+                    shoppingCart.removeProduct(removeItem.getProduct());
+                    updateCartTable();
+                    updateSummary();
+                }
+            }
+        });
+
+        payBtn.addActionListener(e->{
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            dialogButton = JOptionPane.showConfirmDialog(null,
+                    "<html>Are you sure you want to proceed with the payment?<br>Amount :"+finalTotal()+"£</html>",
+                    "Payment Confirmation",
+                    dialogButton);
+
+            if(dialogButton==JOptionPane.YES_OPTION){
+                JOptionPane.showMessageDialog(null,
+                        "<html>Paid: "+finalTotal()+"<br>Payment successful!</html>",
+                        "Payment Status", JOptionPane.INFORMATION_MESSAGE);
+                for (CartItem cartItem : shoppingCart.getItems()) {
+                    Product product = cartItem.getProduct();
+                    int purchasedQuantity = cartItem.getQuantity();
+                    product.updateProductAvailability(purchasedQuantity);
+                }
+
+                updateProductAvailabilityDB();
+                updateFirstPurchase();
+                shoppingCart.clearCart();
+                updateCartTable();
+                updateSummary();
+                shoppingCenterGUI.updateProductTable();
+            }
+        });
+    }
+
+    public void updateProductAvailabilityDB(){
+        String sql="";
+
+        try (Connection connection = DBConnection.getConnection()) {
+            for(CartItem cartItem:shoppingCart.getItems()){
+                if(cartItem.getProduct() instanceof Electronics){
+                    sql="UPDATE Electronics SET availableItems = ? WHERE productID = ?";
+                }else if(cartItem.getProduct() instanceof Clothing){
+                    sql="UPDATE Clothing SET availableItems = ? WHERE productID = ?";
+                }
+
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setInt(1, cartItem.getProduct().getAvailableItems());
+                statement.setString(2, cartItem.getProduct().getProductID());
+
+                int rowsUpdated = statement.executeUpdate();
+                if (rowsUpdated > 0) {
+                    System.out.println("Product availability updated to db successfully.");
+                }
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updateFirstPurchase(){
+        if(!user.isFirstPurchaseCompleted()){
+            user.setFirstPurchaseCompleted(true);
+            try (Connection connection=DBConnection.getConnection()){
+                String sql="UPDATE users SET firstPurchaseCompleted = ? WHERE username = ?";
+
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setInt(1, 1);
+                statement.setString(2, user.getUserName());
+
+                int rowsUpdated = statement.executeUpdate();
+                if (rowsUpdated > 0) {
+                    System.out.println("User First purchase done updated to db successfully.");
+                }
+            } catch (SQLException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
