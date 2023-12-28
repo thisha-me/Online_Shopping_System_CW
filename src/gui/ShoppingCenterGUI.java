@@ -3,6 +3,7 @@ package gui;
 import cli.*;
 import gui.def.ColorChangeCellRender;
 import gui.def.NoEditableTableModel;
+import main.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

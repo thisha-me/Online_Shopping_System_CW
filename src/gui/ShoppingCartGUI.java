@@ -1,17 +1,14 @@
 package gui;
 
-import cli.*;
 import gui.def.CenterCellRender;
 import gui.def.NoEditableTableModel;
+import main.*;
 import utils.DBConnection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

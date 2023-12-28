@@ -1,13 +1,12 @@
 package gui;
 
-import cli.User;
+import main.User;
 import utils.DBConnection;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class RegisterGUI extends JFrame {
