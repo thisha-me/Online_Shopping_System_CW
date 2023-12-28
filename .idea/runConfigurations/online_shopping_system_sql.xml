@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="online_shopping_system.sql" type="DatabaseScript" editBeforeRun="true" singleton="false" nameIsGenerated="true">
+    <script-file value="$PROJECT_DIR$/online_shopping_system.sql" />
+    <script-mode>FILE</script-mode>
+    <data-source id="a92108c1-16a7-498e-b92d-3316db6084b8" />
+    <method v="2" />
+  </configuration>
+</component>
