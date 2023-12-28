@@ -1,9 +1,14 @@
 package cli;
 
+import gui.LoginGUI;
+import main.Clothing;
+import main.Electronics;
+import main.Product;
+import main.ShoppingManager;
 import utils.DBConnection;
 import utils.InputValidator; //custom defined input validators
 
-import java.io.*;
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +32,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return products;
     }
 
-    public void displayMenu() {
+    public synchronized void displayMenu() {
         String choice;
         do {
             System.out.println("\nMenu:");
@@ -35,7 +40,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
             System.out.println("2. Delete a product");
             System.out.println("3. Print list of products");
             System.out.println("4. Save products to file");
-            System.out.println("5. Exit");
+            System.out.println("5. Open customer login(GUI)");
+            System.out.println("6. Exit");
 
             System.out.print("Enter choice: ");
             choice = scanner.next();
@@ -45,10 +51,11 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 case "2" -> deleteProduct();
                 case "3" -> printProducts();
                 case "4" -> saveProducts();
-                case "5" -> System.out.println("Exit the program...");
+                case "5" ->startGUI();
+                case "6" -> System.out.println("Exit the program...");
                 default -> System.out.println("Invalid choice.");
             }
-        } while (!choice.equals("5"));
+        } while (!choice.equals("6"));
 
     }
 
@@ -161,38 +168,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
             System.out.println(product + "\n");
         }
     }
-//
-//    @Override
-//    public void saveProductsToFile() {
-//        try (FileWriter writer=new FileWriter("products.csv")){
-//            for (Product product:products){
-//                writer.write(product.toCSV());
-//            }
-//            System.out.println("Product Save to File Successfully");
-//        } catch (IOException e) {
-//            System.out.println("Error saving products to file.");
-//        }
-//    }
-//
-//    @Override
-//    public void loadProductsFromFile() {
-//        try (BufferedReader reader = new BufferedReader(new FileReader("products.csv"))) {
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                String[] data = line.split(",");
-//                if (data.length > 0) {
-//                    String productType = data[0]; // get product type
-//                    if (productType.equals("Electronics")) {
-//                        products.add(Electronics.fromCSV(line));
-//                    } else if (productType.equals("Clothing")) {
-//                        products.add(Clothing.fromCSV(line));
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            System.out.println("No saved products found.");
-//        }
-//    }
 
     public void saveProducts() {
         try (Connection connection = DBConnection.getConnection()) {
@@ -220,7 +195,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
             }
 
             // if delete products delete form the db
-            deleteProductsDB( connection);
+            deleteProductsDB(connection);
 
             System.out.println("Data save to database");
         } catch (SQLException | ClassNotFoundException e) {
@@ -272,16 +247,29 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
     }
 
-    private void deleteProductsDB(Connection connection) throws SQLException{
+    private void deleteProductsDB(Connection connection) throws SQLException {
         String sql;
         for (Product product : deletedProducts) {
             sql = "DELETE FROM ";
             sql += product instanceof Electronics ? "Electronics WHERE productId=?" : "Clothing WHERE productId=?";
-            PreparedStatement statement=connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, product.getProductID());
             statement.executeUpdate();
         }
         deletedProducts.clear();
     }
 
+    public void startGUI(){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new LoginGUI().setVisible(true);
+            }
+        });
+    }
+
+
+    public static void main(String[] args) {
+        new WestminsterShoppingManager().displayMenu();
+    }
 }
