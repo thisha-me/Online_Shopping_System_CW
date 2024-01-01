@@ -115,7 +115,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
         }
     }
 
-    private boolean isExistProductID(String productID) {
+    public boolean isExistProductID(String productID) {
         for (Product product : products) {
             return product.getProductID().equals(productID);
         }

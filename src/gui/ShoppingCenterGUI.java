@@ -1,17 +1,13 @@
 package gui;
 
-import cli.*;
+import cli.WestminsterShoppingManager;
 import gui.def.ColorChangeCellRender;
 import gui.def.NoEditableTableModel;
 import main.*;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -143,51 +139,43 @@ public class ShoppingCenterGUI extends JFrame {
 
     private void addListeners() {
 
-        category.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox<String> category = (JComboBox<String>) e.getSource();
-                selectedOption = (String) category.getSelectedItem();
-                selectCategoryModel(selectedOption);
-            }
+        category.addActionListener(e -> {
+            JComboBox<String> category = (JComboBox<String>) e.getSource();
+            selectedOption = (String) category.getSelectedItem();
+            selectCategoryModel(selectedOption);
+            clearDetails();
         });
 
 
-        productTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                int selectedRow = productTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String productId = (String) productTable.getValueAt(selectedRow, 0);
-                    for (Product product : products) {
-                        if (product.getProductID().equals(productId)) {// Correct comparison
-                            selectedProduct = product;
-                            productDetail.setText("<html>" + product.toString().replace("\n", "<br/>") + "</html>");
-                        }
+        productTable.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = productTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String productId = (String) productTable.getValueAt(selectedRow, 0);
+                for (Product product : products) {
+                    if (product.getProductID().equals(productId)) {// Correct comparison
+                        selectedProduct = product;
+                        productDetail.setText("<html>" + product.toString().replace("\n", "<br/>") + "</html>");
                     }
                 }
             }
         });
 
-        sortByProductIdBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Collections.sort(products);
-                selectCategoryModel(selectedOption);
-            }
+        sortByProductIdBtn.addActionListener(e -> {
+            Collections.sort(products);
+            selectCategoryModel(selectedOption);
+            clearDetails();
         });
 
-        sortByNameBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                products.sort(Product.compareByName);
-                selectCategoryModel(selectedOption);
-            }
+        sortByNameBtn.addActionListener(e -> {
+            products.sort(Product.compareByName);
+            selectCategoryModel(selectedOption);
+            clearDetails();
         });
 
         sortByPriceBtn.addActionListener(e -> {
             products.sort(Product.compareByPrice);
             selectCategoryModel(selectedOption);
+            clearDetails();
         });
 
         addToCartBtn.addActionListener(e -> {
@@ -220,12 +208,16 @@ public class ShoppingCenterGUI extends JFrame {
         this.getContentPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                productDetail.setText("<html>" + "<br/>".repeat(6) + "</html>"); // Clear the product details
-                selectedProduct = null;
+                clearDetails();
             }
         });
 
         shoppingCartBtn.addActionListener(e -> shoppingCartGUI.setVisible(!shoppingCartGUI.isVisible()));
+    }
+
+    private void clearDetails(){
+        productDetail.setText("<html>" + "<br/>".repeat(6) + "</html>"); // Clear the product details
+        selectedProduct = null;
     }
 
     private void selectCategoryModel(String type) {
