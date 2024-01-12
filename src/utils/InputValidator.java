@@ -4,13 +4,17 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class InputValidator {
-    private final Scanner scanner=new Scanner(System.in);
+    private static final Scanner scanner=new Scanner(System.in);
 
-    public double get_double(String input_txt){
+    public static double getPositiveDouble(String input_txt){
         while (true){
             try {
                 System.out.print(input_txt);
-                return scanner.nextDouble();
+                double val=scanner.nextDouble();
+                if(val>0){
+                    return val;
+                }
+                System.out.println("Input must be positive");
             }catch (InputMismatchException e){
                 System.out.println("Input must be double value!");
                 scanner.next();
@@ -18,11 +22,15 @@ public class InputValidator {
         }
     }
 
-    public int get_int(String input_txt){
+    public static int getPositiveInt(String input_txt){
         while (true){
             try {
                 System.out.print(input_txt);
-                return scanner.nextInt();
+                int val=scanner.nextInt();
+                if(val>0){
+                    return val;
+                }
+                System.out.println("Input must be positive");
             }catch (InputMismatchException e){
                 System.out.println("Input must be integer value!");
                 scanner.next();

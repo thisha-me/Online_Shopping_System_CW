@@ -1,6 +1,7 @@
 package main;
 
 import utils.DBConnection;
+import utils.LoggerUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,6 +18,8 @@ public class ShoppingCart implements Serializable {
     public ShoppingCart() {
         items = new ArrayList<>();
     }
+
+//    LoggerUtil.
 
     public void addProduct(Product product) {
         int availableQuantity = product.getAvailableItems();
@@ -101,11 +104,11 @@ public class ShoppingCart implements Serializable {
 
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("ShoppingCart Object serialized and saved to the database!");
+                LoggerUtil.logInfo("ShoppingCart Object serialized and saved to the database!");
             }
 
         }catch (SQLException | ClassNotFoundException | IOException e){
-            e.printStackTrace();
+            LoggerUtil.logError("Error occurred during update cart to db", e);
         }
     }
 }

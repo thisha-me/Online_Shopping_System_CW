@@ -1,43 +1,75 @@
 package test;
 
-import cli.WestminsterShoppingManager;
+import main.Clothing;
 import main.Electronics;
+import main.Product;
+import main.WestminsterShoppingManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import utils.InputValidator;
 
-import java.util.Scanner;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WestminsterShoppingManagerTest {
+
     private WestminsterShoppingManager shoppingManager;
+    private Product product1, product2, product3;
 
     @BeforeEach
-    public void setUp(){
+    void setUp() {
         shoppingManager = new WestminsterShoppingManager();
+
+        product1 = new Electronics("P001", "iPhone 13", 10, 1000.0, "Apple", 12);
+        product2 = new Clothing("P002", "T-Shirt", 20, 20.0, "M", "Blue");
+        product3 = new Electronics("P003", "Samsung Galaxy S22", 15, 900.0, "Samsung", 18);
     }
 
     @Test
-    public void testAddProduct() {
-        Scanner scanner = Mockito.mock(Scanner.class);
-        InputValidator inputValidator = Mockito.mock(InputValidator.class);
-        Mockito.when(scanner.next()).thenReturn("123", "TestProduct", "1", "Brand", "3");
+    void testAddProduct() {
+        shoppingManager.addProduct();
 
-        Mockito.when(inputValidator.get_int(Mockito.anyString())).thenReturn(10);
-        Mockito.when(inputValidator.get_double(Mockito.anyString())).thenReturn(50.0);
-
-
+        ArrayList<Product> products = shoppingManager.getProducts();
+        assertTrue(products.contains(product1));
+        assertTrue(products.contains(product2));
+        assertTrue(products.contains(product3));
     }
 
     @Test
-    public void testDeleteProduct() {
+    void testDeleteProduct() {
+        shoppingManager.getProducts().add(product1);
+        shoppingManager.getProducts().add(product2);
 
+        shoppingManager.deleteProduct();
 
+        ArrayList<Product> products = shoppingManager.getProducts();
+        assertFalse(products.contains(product1));
+        assertTrue(products.contains(product2));
     }
 
-    private void addSampleElectronicsProduct() {
-        Electronics sampleElectronics = new Electronics("E001", "Sample Electronics", 10, 99.99, "Sample Brand", 12);
-        shoppingManager.getProducts().add(sampleElectronics);
-    }
-
+//    @Test
+//    void testPrintProducts() {
+//        shoppingManager.getProducts().add(product1);
+//        shoppingManager.getProducts().add(product2);
+//
+//        shoppingManager.printProducts();
+//
+//        String expectedOutput =
+//                "Product ID: P001\n" +
+//                        "Product Name: iPhone 13\n" +
+//                        "Available Items: 10\n" +
+//                        "Price: 1000.0\n" +
+//                        "Brand: Apple\n" +
+//                        "Warranty Period (Months): 12\n\n" +
+//
+//                        "Product ID: P002\n" +
+//                        "Product Name: T-Shirt\n" +
+//                        "Available Items: 20\n" +
+//                        "Price: 20.0\n" +
+//                        "Size: M\n" +
+//                        "Color: Blue\n\n";
+//
+//        assertEquals(expectedOutput, shoppingManager.printProducts());
+//    }
 }

@@ -4,6 +4,7 @@ import gui.def.CenterCellRender;
 import gui.def.NoEditableTableModel;
 import main.*;
 import utils.DBConnection;
+import utils.LoggerUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 public class ShoppingCartGUI extends JFrame {
     private ShoppingCart shoppingCart;
@@ -27,13 +27,11 @@ public class ShoppingCartGUI extends JFrame {
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
     ShoppingCenterGUI shoppingCenterGUI;
-    ArrayList<Product> products;
 
     public ShoppingCartGUI(ShoppingCart shoppingCart, User user, ShoppingCenterGUI shoppingCenterGUI){
         this.shoppingCart=shoppingCart;
         this.user = user != null ? user : new User("", false);
         this.shoppingCenterGUI=shoppingCenterGUI;
-        this.products=shoppingCenterGUI.getProducts();
 
         initializeFrame();
         createTable();
@@ -151,7 +149,6 @@ public class ShoppingCartGUI extends JFrame {
     private void actions(){
         cartTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
-            System.out.println("Select");
             if(selectedRow!=-1){
                 CartItem removeItem=shoppingCart.getItems().get(selectedRow);
                 int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -213,11 +210,11 @@ public class ShoppingCartGUI extends JFrame {
 
                 int rowsUpdated = statement.executeUpdate();
                 if (rowsUpdated > 0) {
-                    System.out.println("Product availability updated to db successfully.");
+                    LoggerUtil.logInfo("Product availability updated to db successfully.");
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            LoggerUtil.logError("Update Product availability error", e);
         }
 
     }
@@ -234,10 +231,10 @@ public class ShoppingCartGUI extends JFrame {
 
                 int rowsUpdated = statement.executeUpdate();
                 if (rowsUpdated > 0) {
-                    System.out.println("User First purchase done updated to db successfully.");
+                    LoggerUtil.logInfo("User First purchase done updated to db successfully.");
                 }
             } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
+                LoggerUtil.logError("Update First purchase error",e);
             }
         }
     }

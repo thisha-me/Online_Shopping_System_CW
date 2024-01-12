@@ -1,12 +1,13 @@
 package gui;
 
-import cli.WestminsterShoppingManager;
+import main.WestminsterShoppingManager;
 import gui.def.ColorChangeCellRender;
 import gui.def.NoEditableTableModel;
 import main.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,6 +19,7 @@ public class ShoppingCenterGUI extends JFrame {
     private JComboBox<String> category;
     private JButton shoppingCartBtn;
     private JTable productTable;
+    JTableHeader tableHeader;
     private DefaultTableModel productTableModel;
     private JButton sortByProductIdBtn;
     private JButton sortByNameBtn;
@@ -105,13 +107,20 @@ public class ShoppingCenterGUI extends JFrame {
 
     private void createProductTable() {
         productTable = new JTable();
+
+        productTable.setRowHeight(30);
         productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));// change cell color
 
         productTableModel = new NoEditableTableModel();
         productTable.setModel(productTableModel);
+
+        tableHeader=productTable.getTableHeader();
+        tableHeader.setPreferredSize(new Dimension(tableHeader.getWidth(),30));
+
         selectCategoryModel("All");
 
         JScrollPane scrollPane = new JScrollPane(productTable);
+
 
         add(scrollPane, BorderLayout.CENTER);
     }
@@ -200,7 +209,6 @@ public class ShoppingCenterGUI extends JFrame {
 
                 shoppingCartGUI.updateCartTable();
                 shoppingCartGUI.updateSummary();
-                System.out.println(selectedProduct.getProductID() + " product added");
                 shoppingCart.updateCartToDB(user);
             }
         });

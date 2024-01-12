@@ -1,14 +1,9 @@
-package cli;
+package main;
 
-import gui.LoginGUI;
-import main.Clothing;
-import main.Electronics;
-import main.Product;
-import main.ShoppingManager;
 import utils.DBConnection;
-import utils.InputValidator; //custom defined input validators
+import utils.InputValidator;
+import utils.LoggerUtil;
 
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +14,6 @@ public class WestminsterShoppingManager implements ShoppingManager {
     private final ArrayList<Product> products;
     private ArrayList<Product> deletedProducts;
     private final Scanner scanner = new Scanner(System.in);
-    private final InputValidator inputValidator = new InputValidator();
 
     public WestminsterShoppingManager() {
         products = new ArrayList<>();
@@ -32,16 +26,16 @@ public class WestminsterShoppingManager implements ShoppingManager {
         return products;
     }
 
-    public synchronized void displayMenu() {
+    public  void displayMenu() {
         String choice;
-        do {
-            System.out.println("\nMenu:");
+        while (true){
+            System.out.println("\n" + "-".repeat(40));
+            System.out.printf("%32s%n", "Shopping Manager Menu");
             System.out.println("1. Add a new product");
             System.out.println("2. Delete a product");
             System.out.println("3. Print list of products");
             System.out.println("4. Save products to file");
-            System.out.println("5. Open customer login(GUI)");
-            System.out.println("6. Exit");
+            System.out.println("5. Go Back");
 
             System.out.print("Enter choice: ");
             choice = scanner.next();
@@ -51,11 +45,10 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 case "2" -> deleteProduct();
                 case "3" -> printProducts();
                 case "4" -> saveProducts();
-                case "5" ->startGUI();
-                case "6" -> System.out.println("Exit the program...");
-                default -> System.out.println("Invalid choice.");
+                case "5" -> {return;}
+                default ->  System.out.println("Invalid choice.");
             }
-        } while (!choice.equals("6"));
+        }
 
     }
 
@@ -79,9 +72,9 @@ public class WestminsterShoppingManager implements ShoppingManager {
         System.out.print("Product Name: ");
         String productName = scanner.next();
 
-        int availableItems = inputValidator.get_int("Available Items: ");
+        int availableItems = InputValidator.getPositiveInt("Available Items: ");
 
-        double price = inputValidator.get_double("Price: ");
+        double price = InputValidator.getPositiveDouble("Price: ");
 
         System.out.println("1. Electronics");
         System.out.println("2. Clothing");
@@ -93,7 +86,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
                 System.out.print("Brand: ");
                 String brand = scanner.next();
 
-                int warrantyPeriod = inputValidator.get_int("Warranty Period (Months): ");
+                int warrantyPeriod = InputValidator.getPositiveInt("Warranty Period (Months): ");
 
                 Electronics newElectronics = new Electronics(productId, productName, availableItems, price, brand, warrantyPeriod);
                 products.add(newElectronics);
@@ -176,12 +169,12 @@ public class WestminsterShoppingManager implements ShoppingManager {
             for (Product product : products) {
 
                 if (product instanceof Electronics) {
-                    sql = "INSERT IGNORE INTO Electronics (productID, productName, availableItems, price, brand, warrantyPeriod) VALUES (?, ?, ?, ?,?, ?)";
+                    sql = "INSERT OR IGNORE INTO Electronics (productID, productName, availableItems, price, brand, warrantyPeriod) VALUES (?, ?, ?, ?,?, ?)";
                     statement = connection.prepareStatement(sql);
                     statement.setString(5, ((Electronics) product).getBrand());
                     statement.setInt(6, ((Electronics) product).getWarrantyPeriod());
                 } else if (product instanceof Clothing) {
-                    sql = "INSERT IGNORE INTO Clothing (productID, productName, availableItems, price, size, color) VALUES (?, ?, ?, ?, ?, ?)";
+                    sql = "INSERT OR IGNORE INTO Clothing (productID, productName, availableItems, price, size, color) VALUES (?, ?, ?, ?, ?, ?)";
                     statement = connection.prepareStatement(sql);
                     statement.setString(5, ((Clothing) product).getSize());
                     statement.setString(6, ((Clothing) product).getColor());
@@ -199,7 +192,7 @@ public class WestminsterShoppingManager implements ShoppingManager {
 
             System.out.println("Data save to database");
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            LoggerUtil.logError("Save product to db error ",e);
         }
     }
 
@@ -208,7 +201,8 @@ public class WestminsterShoppingManager implements ShoppingManager {
             loadElectronics(connection);
             loadClothing(connection);
         } catch (SQLException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println("Loading product error");
+            LoggerUtil.logError("Load product error",e);
         }
     }
 
@@ -259,17 +253,5 @@ public class WestminsterShoppingManager implements ShoppingManager {
         deletedProducts.clear();
     }
 
-    public void startGUI(){
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new LoginGUI().setVisible(true);
-            }
-        });
-    }
 
-
-    public static void main(String[] args) {
-        new WestminsterShoppingManager().displayMenu();
-    }
 }

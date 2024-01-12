@@ -3,6 +3,7 @@ package gui;
 import main.ShoppingCart;
 import main.User;
 import utils.DBConnection;
+import utils.LoggerUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,7 +67,6 @@ public class LoginGUI extends JFrame {
                 shoppingCenterGUI.setVisible(true);
                 shoppingCenterGUI.setUser(user);
                 shoppingCenterGUI.setShoppingCart(shoppingCart);
-
             }
         });
 
@@ -111,20 +111,20 @@ public class LoginGUI extends JFrame {
                     ByteArrayInputStream bis = new ByteArrayInputStream(serializedObject);
                     ObjectInputStream ois = new ObjectInputStream(bis);
                     shoppingCart = (ShoppingCart) ois.readObject();
-                    System.out.println("Object load successfully");
+                    LoggerUtil.logInfo("Cart Object Load successfully");
 
                 } else {
                     shoppingCart=new ShoppingCart();
-                    System.out.println("object not saves");
+                    LoggerUtil.logInfo("Create Cart Object");
                 }
-                System.out.println("successfully login");
+                LoggerUtil.logInfo("user login successful");
                 return true;
             } else {
                 passwordField.setText("");
                 JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password!","error",JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException | ClassNotFoundException | IOException ex) {
-            ex.printStackTrace();
+            LoggerUtil.logError("Login Error: ",ex);
         }
         return false;
     }
