@@ -114,7 +114,7 @@ public class ShoppingCartGUI extends JFrame {
     public void updateSummary(){
         totalLabel.setText("Total \t\t\t\t"+shoppingCart.calculateTotalCost());
         threeItemSameCategoryLabel.setText("Three items in Same Category Discount (20%) \t\t\t\t"+threeItemSameCategoryDiscount());
-        finalTotalLabel.setText("Final Total \t\t"+finalTotal());
+        finalTotalLabel.setText("Final Total \t\t"+df.format(finalTotal()));
 
         if(!user.isFirstPurchaseCompleted()){
             firstPurchaseLabel.setText("First Purchase Discount (10%) \t\t\t\t"+firstPurchaseDiscount());
@@ -168,13 +168,13 @@ public class ShoppingCartGUI extends JFrame {
         payBtn.addActionListener(e->{
             int dialogButton = JOptionPane.YES_NO_OPTION;
             dialogButton = JOptionPane.showConfirmDialog(null,
-                    "<html>Are you sure you want to proceed with the payment?<br>Amount :"+finalTotal()+"£</html>",
+                    "<html>Are you sure you want to proceed with the payment?<br>Amount :"+df.format(finalTotal())+"£</html>",
                     "Payment Confirmation",
                     dialogButton);
 
             if(dialogButton==JOptionPane.YES_OPTION){
                 JOptionPane.showMessageDialog(null,
-                        "<html>Paid: "+finalTotal()+"<br>Payment successful!</html>",
+                        "<html>Paid: "+df.format(finalTotal())+"<br>Payment successful!</html>",
                         "Payment Status", JOptionPane.INFORMATION_MESSAGE);
                 for (CartItem cartItem : shoppingCart.getItems()) {
                     Product product = cartItem.getProduct();

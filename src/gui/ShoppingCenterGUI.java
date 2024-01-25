@@ -33,6 +33,8 @@ public class ShoppingCenterGUI extends JFrame {
     private ShoppingCartGUI shoppingCartGUI;
     private User user;
     private JLabel welcomeMsg;
+    private String selectedOption = "All";
+    private Product selectedProduct = null;
 
     public ShoppingCenterGUI(User user) {
         this.user=user;
@@ -51,7 +53,7 @@ public class ShoppingCenterGUI extends JFrame {
 
     private void initializeFrame() {
         setTitle("Westminster Shopping Center");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setSize(1200, 1024);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
@@ -111,7 +113,7 @@ public class ShoppingCenterGUI extends JFrame {
         productTable.setRowHeight(30);
         productTable.setDefaultRenderer(Object.class, new ColorChangeCellRender(updatedProductsByCategory));// change cell color
 
-        productTableModel = new NoEditableTableModel();
+        productTableModel = new NoEditableTableModel(); //no editable
         productTable.setModel(productTableModel);
 
         tableHeader=productTable.getTableHeader();
@@ -143,8 +145,7 @@ public class ShoppingCenterGUI extends JFrame {
         this.add(lowerPanel, BorderLayout.PAGE_END);
     }
 
-    String selectedOption = "All";
-    Product selectedProduct = null;
+
 
     private void addListeners() {
 
@@ -188,7 +189,7 @@ public class ShoppingCenterGUI extends JFrame {
         });
 
         addToCartBtn.addActionListener(e -> {
-            if (selectedProduct == null) {
+            if (selectedProduct == null) { //null error handling
                 JOptionPane.showMessageDialog(new JFrame(), "Before add to cart you should select the product", "Dialog",
                         JOptionPane.WARNING_MESSAGE);
                 return;
@@ -277,7 +278,7 @@ public class ShoppingCenterGUI extends JFrame {
         productTableModel.setDataVector(newData, columns);
     }
 
-    public void setUser(User user) {
+    public void setUser(User user) {// set user to shopping cart
         this.user = user;
         shoppingCartGUI.setUser(user);
         welcomeMsg.setText("Welcome " + user.getUserName());
@@ -291,6 +292,7 @@ public class ShoppingCenterGUI extends JFrame {
         selectCategoryModel(selectedOption);
     }
 
+    //set shopping cart to cart gui
     public void setShoppingCart(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;
         shoppingCartGUI.setShoppingCart(shoppingCart);

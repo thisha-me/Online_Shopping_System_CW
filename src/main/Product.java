@@ -68,10 +68,7 @@ public abstract class Product implements Comparable<Product>, Serializable{
     public void updateProductAvailability(int purchasedQuantity) {
         if (availableItems >= purchasedQuantity) {
             availableItems -= purchasedQuantity;
-            System.out.println("Product availability updated. Available quantity: " + availableItems);
-        } else {
-            System.out.println("Insufficient quantity available!");
-            // Handle the situation where the purchased quantity exceeds available quantity
+
         }
     }
 
