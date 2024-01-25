@@ -1,6 +1,6 @@
 package gui.def;
 
-import cli.Product;
+import main.Product;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

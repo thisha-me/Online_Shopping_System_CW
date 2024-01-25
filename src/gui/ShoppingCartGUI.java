@@ -1,21 +1,19 @@
 package gui;
 
-import cli.*;
 import gui.def.CenterCellRender;
 import gui.def.NoEditableTableModel;
+import main.*;
 import utils.DBConnection;
+import utils.LoggerUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 public class ShoppingCartGUI extends JFrame {
     private ShoppingCart shoppingCart;
@@ -29,13 +27,11 @@ public class ShoppingCartGUI extends JFrame {
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
     ShoppingCenterGUI shoppingCenterGUI;
-    ArrayList<Product> products;
 
     public ShoppingCartGUI(ShoppingCart shoppingCart, User user, ShoppingCenterGUI shoppingCenterGUI){
         this.shoppingCart=shoppingCart;
         this.user = user != null ? user : new User("", false);
         this.shoppingCenterGUI=shoppingCenterGUI;
-        this.products=shoppingCenterGUI.getProducts();
 
         initializeFrame();
         createTable();
@@ -118,7 +114,7 @@ public class ShoppingCartGUI extends JFrame {
     public void updateSummary(){
         totalLabel.setText("Total \t\t\t\t"+shoppingCart.calculateTotalCost());
         threeItemSameCategoryLabel.setText("Three items in Same Category Discount (20%) \t\t\t\t"+threeItemSameCategoryDiscount());
-        finalTotalLabel.setText("Final Total \t\t"+finalTotal());
+        finalTotalLabel.setText("Final Total \t\t"+df.format(finalTotal()));
 
         if(!user.isFirstPurchaseCompleted()){
             firstPurchaseLabel.setText("First Purchase Discount (10%) \t\t\t\t"+firstPurchaseDiscount());
@@ -153,7 +149,6 @@ public class ShoppingCartGUI extends JFrame {
     private void actions(){
         cartTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
-            System.out.println("Select");
             if(selectedRow!=-1){
                 CartItem removeItem=shoppingCart.getItems().get(selectedRow);
                 int dialogButton = JOptionPane.YES_NO_OPTION;
@@ -165,6 +160,7 @@ public class ShoppingCartGUI extends JFrame {
                     shoppingCart.removeProduct(removeItem.getProduct());
                     updateCartTable();
                     updateSummary();
+                    shoppingCart.updateCartToDB(user);
                 }
             }
         });
@@ -172,13 +168,13 @@ public class ShoppingCartGUI extends JFrame {
         payBtn.addActionListener(e->{
             int dialogButton = JOptionPane.YES_NO_OPTION;
             dialogButton = JOptionPane.showConfirmDialog(null,
-                    "<html>Are you sure you want to proceed with the payment?<br>Amount :"+finalTotal()+"£</html>",
+                    "<html>Are you sure you want to proceed with the payment?<br>Amount :"+df.format(finalTotal())+"£</html>",
                     "Payment Confirmation",
                     dialogButton);
 
             if(dialogButton==JOptionPane.YES_OPTION){
                 JOptionPane.showMessageDialog(null,
-                        "<html>Paid: "+finalTotal()+"<br>Payment successful!</html>",
+                        "<html>Paid: "+df.format(finalTotal())+"<br>Payment successful!</html>",
                         "Payment Status", JOptionPane.INFORMATION_MESSAGE);
                 for (CartItem cartItem : shoppingCart.getItems()) {
                     Product product = cartItem.getProduct();
@@ -192,6 +188,7 @@ public class ShoppingCartGUI extends JFrame {
                 updateCartTable();
                 updateSummary();
                 shoppingCenterGUI.updateProductTable();
+                shoppingCart.updateCartToDB(user);
             }
         });
     }
@@ -213,11 +210,11 @@ public class ShoppingCartGUI extends JFrame {
 
                 int rowsUpdated = statement.executeUpdate();
                 if (rowsUpdated > 0) {
-                    System.out.println("Product availability updated to db successfully.");
+                    LoggerUtil.logInfo("Product availability updated to db successfully.");
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            LoggerUtil.logError("Update Product availability error", e);
         }
 
     }
@@ -234,11 +231,15 @@ public class ShoppingCartGUI extends JFrame {
 
                 int rowsUpdated = statement.executeUpdate();
                 if (rowsUpdated > 0) {
-                    System.out.println("User First purchase done updated to db successfully.");
+                    LoggerUtil.logInfo("User First purchase done updated to db successfully.");
                 }
             } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
+                LoggerUtil.logError("Update First purchase error",e);
             }
         }
+    }
+
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 }

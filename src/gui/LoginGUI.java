@@ -1,10 +1,15 @@
 package gui;
 
-import cli.User;
+import main.ShoppingCart;
+import main.User;
 import utils.DBConnection;
+import utils.LoggerUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 
 public class LoginGUI extends JFrame {
@@ -18,10 +23,11 @@ public class LoginGUI extends JFrame {
     private RegisterGUI registerGUI;
 
     private User user;
+    ShoppingCart shoppingCart;
 
     public LoginGUI() {
         setTitle("User Login");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 200);
         setLayout(new BorderLayout());
         setResizable(false);
@@ -60,7 +66,7 @@ public class LoginGUI extends JFrame {
                 this.setVisible(false);
                 shoppingCenterGUI.setVisible(true);
                 shoppingCenterGUI.setUser(user);
-
+                shoppingCenterGUI.setShoppingCart(shoppingCart);
             }
         });
 
@@ -98,14 +104,27 @@ public class LoginGUI extends JFrame {
                 String resUsername=resultSet.getString("username");
                 boolean resFirstPurchaseCompleted=resultSet.getInt("firstPurchaseCompleted")==1;
                 user=new User(resUsername,resFirstPurchaseCompleted);
-                System.out.println("successfully login");
+                byte[] serializedObject = resultSet.getBytes("shoppingCart");
+
+                if (serializedObject != null) {
+                    // Deserialize the object
+                    ByteArrayInputStream bis = new ByteArrayInputStream(serializedObject);
+                    ObjectInputStream ois = new ObjectInputStream(bis);
+                    shoppingCart = (ShoppingCart) ois.readObject();
+                    LoggerUtil.logInfo("Cart Object Load successfully");
+
+                } else {
+                    shoppingCart=new ShoppingCart();
+                    LoggerUtil.logInfo("Create Cart Object");
+                }
+                LoggerUtil.logInfo("user login successful");
                 return true;
             } else {
                 passwordField.setText("");
                 JOptionPane.showMessageDialog(new JFrame(), "Invalid username or password!","error",JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException | ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
+        } catch (SQLException | ClassNotFoundException | IOException ex) {
+            LoggerUtil.logError("Login Error: ",ex);
         }
         return false;
     }

@@ -1,0 +1,6 @@
+Jan 17, 2024 5:18:26 PM utils.LoggerUtil logInfo
+INFO: Cart Object Load successfully
+Jan 17, 2024 5:18:26 PM utils.LoggerUtil logInfo
+INFO: user login successful
+Jan 17, 2024 5:18:55 PM utils.LoggerUtil logInfo
+INFO: ShoppingCart Object serialized and saved to the database!

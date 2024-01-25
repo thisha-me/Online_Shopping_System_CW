@@ -1,13 +1,13 @@
 package gui;
 
-import cli.User;
+import main.User;
 import utils.DBConnection;
+import utils.LoggerUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class RegisterGUI extends JFrame {
@@ -106,7 +106,7 @@ public class RegisterGUI extends JFrame {
 
             int rowsAffected = statement.executeUpdate();
             if(rowsAffected>0){
-                System.out.println("Registration successfully");
+                LoggerUtil.logInfo("Registration successfully");
                 JOptionPane.showMessageDialog(new JFrame(),
                         "Registration Successfully please Log again",
                         "Warning", JOptionPane.INFORMATION_MESSAGE);
@@ -122,7 +122,7 @@ public class RegisterGUI extends JFrame {
                 JOptionPane.showMessageDialog(new JFrame(), "Registration failed! Please try again.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
-            System.out.println(ex.getMessage());
+            LoggerUtil.logError("User registration error",ex);
         }
     }
 
